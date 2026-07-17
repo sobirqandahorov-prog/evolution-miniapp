@@ -1,0 +1,10 @@
+{
+  "name": "evolution-miniapp-backend",
+  "version": "1.0.0",
+  "description": "Evolution Logistics Telegram Bot Server",
+  "main": "api/bot.js",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.20.0",
+    "telegraf": "^4.16.3"
+  }
+}
