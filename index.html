@@ -827,24 +827,31 @@ function submitOrder(){
 function openSheet(id){ haptic('light'); document.getElementById(id).classList.add('on'); if(id==='sheetContact')setupQuick(); }
 function closeSheets(){ document.querySelectorAll('.sheet-bg').forEach(s=>s.classList.remove('on')); }
 function setupQuick(){
-  // Menejerlar ma'lumotlarini ekranga chiroyli qilib chiqaramiz
+  // 1. Tugmalarni sensor bosa olishi uchun z-index qatlamini eng tepaga ko'taramiz
+  const footerMenu = document.querySelector('.bottom-nav') || document.querySelector('footer');
+  if(footerMenu) {
+    footerMenu.style.zIndex = "9999";
+    footerMenu.style.pointerEvents = "auto";
+  }
+
+  // 2. Simvollar xatosini yo'qotish uchun matnlarni inglizcha harflarda xavfsiz yozamiz
   const adminPhoneTxt = document.getElementById('adminPhoneTxt');
   if(adminPhoneTxt) {
     adminPhoneTxt.innerHTML = `
       <div style="text-align: left; padding: 10px 0; font-family: sans-serif; font-size: 14px; line-height: 1.6; color: #1e293b;">
-        <div style="margin-bottom: 8px; font-weight: bold; color: #0284c7;">👨‍💼 Zuxriddin: <a href="tel:+998908177627" style="color:#0284c7; text-decoration:none;">+998 (90) 817-76-27</a></div>
-        <div style="margin-bottom: 8px; font-weight: bold; color: #0284c7;">👨‍💼 Sobir: <a href="tel:+998936861168" style="color:#0284c7; text-decoration:none;">+998 (93) 686-11-68</a></div>
-        <div style="font-weight: bold; color: #0284c7;">👨‍💼 Shuxrat: <a href="tel:+998976804707" style="color:#0284c7; text-decoration:none;">+998 (97) 680-47-07</a></div>
+        <div style="margin-bottom: 8px; font-weight: bold; color: #0284c7;"> Manager Zuxriddin: <a href="tel:+998908177627" style="color:#0284c7; text-decoration:none;">+998908177627</a></div>
+        <div style="margin-bottom: 8px; font-weight: bold; color: #0284c7;"> Manager Sobir: <a href="tel:+998936861168" style="color:#0284c7; text-decoration:none;">+998936861168</a></div>
+        <div style="font-weight: bold; color: #0284c7;"> Manager Shuxrat: <a href="tel:+998976804707" style="color:#0284c7; text-decoration:none;">+998976804707</a></div>
       </div>
     `;
   }
 
-  // Tugmalarni bosganda Zuxriddinga ulanadigan qilamiz
+  // 3. Tugmalarni to'g'ridan-to'g'ri bot havolasiga xavfsiz yo'naltiramiz
   const qcTg = document.getElementById('qcTg');
   if(qcTg) {
     qcTg.href = "#";
     qcTg.onclick = (e) => { 
-      e.preventDefault(); 
+      e.preventDefault(); }
       if(typeof tg !== 'undefined' && tg.openTelegramLink) { 
         tg.openTelegramLink('https://t.me'); 
       } else { 
@@ -852,6 +859,8 @@ function setupQuick(){
       } 
     };
   }
+}
+
 }
 
   document.getElementById('qcWa').href='https://wa.me/'+CONFIG.whatsapp;
