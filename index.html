@@ -1,354 +1,858 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Evolution Logistics — AI-помощник</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0B1929; --navy2:#0f2236; --navy3:#16304a;
+  --blue:#1E7BE8; --blue2:#5AABFF; --blue-soft:#e8f1fd;
+  --bg:#f4f7fb; --card:#ffffff;
+  --text:#0B1929; --text2:#3d5573; --text3:#7A90A8;
+  --border:#e6ecf4; --border2:#d8e0ea;
+  --ok:#1f9d57; --ok-soft:#e6f6ec; --warn:#e08a3c; --warn-soft:#fbf0e3; --red:#d64545;
+  --sat: env(safe-area-inset-top,0px); --sab: env(safe-area-inset-bottom,0px);
+  --shadow: 0 8px 30px rgba(11,25,41,0.10);
+  --ai-av: url('data:image/jpeg;base64,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');
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;overscroll-behavior-y:none}
+h1,h2,h3,h4{font-family:'Outfit',sans-serif;margin:0;line-height:1.15;letter-spacing:-0.01em}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+a{color:var(--blue);text-decoration:none}
+input,select,textarea{font-family:inherit}
 
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:520px;margin:0 auto;position:relative;background:var(--bg)}
+.appbar{background:var(--navy);color:#fff;padding:calc(var(--sat) + 12px) 16px 12px;display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;top:0;z-index:30}
+.brand{display:flex;align-items:center;gap:9px;min-width:0}
+.brand-logo{width:30px;height:30px;flex-shrink:0}
+.brand-txt{display:flex;flex-direction:column;line-height:1.05;min-width:0}
+.brand-name{font-family:'Outfit';font-weight:700;font-size:15px;letter-spacing:0.2px}
+.brand-sub{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--blue2);font-weight:600}
+.langs{display:flex;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:9px;overflow:hidden;flex-shrink:0}
+.langs button{color:rgba(255,255,255,0.6);padding:6px 8px;font-size:11px;font-weight:700;line-height:1}
+.langs button.on{background:var(--blue);color:#fff}
+
+.views{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative}
+.view{display:none;padding:16px 16px 90px;animation:fade .25s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.hero{background:linear-gradient(155deg,var(--navy),var(--navy2) 60%,var(--navy3));border-radius:20px;padding:22px 20px;color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.hero::after{content:"";position:absolute;right:-40px;top:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(30,123,232,0.35),transparent 70%)}
+.hero-eyebrow{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--blue2);font-weight:700;display:flex;align-items:center;gap:6px}
+.hero-eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(31,157,87,0.25)}
+.hero h1{font-size:22px;font-weight:800;margin:10px 0 6px}
+.hero p{font-size:13px;color:rgba(255,255,255,0.72);margin:0;position:relative}
+.hero-badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;position:relative}
+.hbadge{font-size:10.5px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);padding:4px 9px;border-radius:20px;color:rgba(255,255,255,0.85)}
+
+.section-label{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);font-weight:700;margin:22px 2px 11px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.qcard{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;text-align:left;display:flex;flex-direction:column;gap:8px;transition:transform .12s,box-shadow .12s}
+.qcard:active{transform:scale(0.97);box-shadow:var(--shadow)}
+.qcard .ico{width:38px;height:38px;border-radius:11px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:19px}
+.qcard .ico svg{width:20px;height:20px;stroke:var(--blue);fill:none}
+.qcard .t{font-family:'Outfit';font-weight:700;font-size:13.5px;color:var(--navy)}
+.qcard .d{font-size:11px;color:var(--text3);line-height:1.3}
+
+.routes-strip{display:flex;gap:9px;overflow-x:auto;padding:2px 0 4px;margin:0 -2px;scrollbar-width:none}
+.routes-strip::-webkit-scrollbar{display:none}
+.rchip{flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:13px;padding:11px 13px;min-width:150px;text-align:left}
+.rchip .r{font-weight:700;font-size:13px;color:var(--navy);font-family:'Outfit'}
+.rchip .m{font-size:10.5px;color:var(--text3);margin-top:3px}
+
+/* Chat */
+#view-chat{padding:0;display:none;flex-direction:column;height:100%}
+#view-chat.on{display:flex}
+.chat-banner{background:var(--navy);color:#fff;padding:11px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.chat-banner .av{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:var(--ai-av) center top/cover;border:1.5px solid rgba(255,255,255,.25)}
+.chat-banner .nm{font-family:'Outfit';font-weight:700;font-size:14px}
+.chat-banner .st{font-size:10.5px;color:var(--blue2);display:flex;align-items:center;gap:5px}
+.chat-banner .st .d{width:6px;height:6px;border-radius:50%;background:var(--ok)}
+.chat-scroll{flex:1;overflow-y:auto;padding:16px 14px 8px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:84%;padding:10px 13px;border-radius:15px;font-size:14px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word;animation:fade .2s}
+.msg.bot{background:var(--card);border:1px solid var(--border);border-bottom-left-radius:5px;color:var(--text)}
+.msg.me{background:var(--blue);color:#fff;border-bottom-right-radius:5px;align-self:flex-end}
+.msg.bot a{color:var(--blue);font-weight:600}
+.msg-row{display:flex;gap:8px;align-items:flex-end;align-self:flex-start;max-width:92%}
+.msg-row .msg.bot{align-self:auto}
+.msg-av{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:var(--ai-av) center top/cover;border:1.5px solid #fff;box-shadow:0 1px 5px rgba(11,25,41,.18)}
+.typing{padding:13px 15px;background:var(--card);border:1px solid var(--border);border-radius:15px;border-bottom-left-radius:5px;display:flex;gap:4px}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--text3);animation:bounce 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,60%,100%{opacity:.3;transform:translateY(0)}30%{opacity:1;transform:translateY(-4px)}}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:8px 14px;scrollbar-width:none;flex-shrink:0}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;background:var(--blue-soft);color:var(--blue);border:1px solid #cfe2fb;padding:8px 13px;border-radius:20px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.chat-input{display:flex;gap:7px;padding:10px 12px calc(10px + var(--sab));background:var(--card);border-top:1px solid var(--border);flex-shrink:0;align-items:flex-end}
+.chat-input textarea{flex:1;border:1px solid var(--border2);border-radius:13px;padding:10px 13px;font-size:14px;resize:none;max-height:96px;line-height:1.4;color:var(--text);background:var(--bg)}
+.chat-input textarea:focus{outline:none;border-color:var(--blue)}
+.ic-btn{width:42px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--bg);border:1px solid var(--border2)}
+.ic-btn svg{width:19px;height:19px;stroke:var(--text2);fill:none}
+.ic-btn.rec{background:var(--red);border-color:var(--red)}
+.ic-btn.rec svg{stroke:#fff}
+.send-btn{width:42px;height:42px;border-radius:13px;background:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.send-btn svg{width:19px;height:19px;stroke:#fff;fill:none}
+.send-btn:disabled{opacity:.4}
+
+/* Forms */
+.field{margin-bottom:13px}
+.field label{display:block;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);font-weight:700;margin-bottom:6px}
+.field label .q{display:inline-flex;width:15px;height:15px;border-radius:50%;background:var(--blue-soft);color:var(--blue);font-size:10px;align-items:center;justify-content:center;margin-left:5px;vertical-align:middle;cursor:pointer}
+.field select,.field input{width:100%;border:1px solid var(--border2);border-radius:12px;padding:12px 13px;font-size:14.5px;color:var(--text);background:var(--card);-webkit-appearance:none;appearance:none}
+.field select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path fill='%237A90A8' d='M6 8 0 0h12z'/></svg>");background-repeat:no-repeat;background-position:right 14px center}
+.field select:focus,.field input:focus{outline:none;border-color:var(--blue)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.checks{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:13px}
+.chk{display:flex;align-items:center;gap:7px;border:1px solid var(--border2);border-radius:11px;padding:9px 12px;font-size:12.5px;color:var(--text2);font-weight:600}
+.chk.on{background:var(--blue-soft);border-color:var(--blue);color:var(--blue)}
+.chk input{display:none}
+.btn-primary{width:100%;background:var(--navy);color:#fff;border-radius:14px;padding:15px;font-family:'Outfit';font-weight:700;font-size:15px;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary:active{transform:scale(0.98)}
+.btn-primary svg{width:18px;height:18px;stroke:#fff;fill:none}
+.btn-blue{background:var(--blue)}
+.btn-outline{background:#fff;border:1.5px solid var(--blue);color:var(--blue)}
+.btn-outline svg{stroke:var(--blue)}
+
+/* Result cards */
+.res-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px;margin-bottom:11px;position:relative;overflow:hidden}
+.res-card.best{border-color:var(--blue);box-shadow:0 6px 20px rgba(30,123,232,0.14)}
+.res-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}
+.res-mode{display:flex;align-items:center;gap:9px}
+.res-mode .mi{width:34px;height:34px;border-radius:10px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:17px}
+.res-mode .mn{font-family:'Outfit';font-weight:700;font-size:15px;color:var(--navy)}
+.res-mode .md{font-size:11px;color:var(--text3)}
+.res-badge{font-size:10px;font-weight:700;padding:4px 8px;border-radius:7px;white-space:nowrap}
+.bdg-best{background:var(--blue-soft);color:var(--blue)}
+.bdg-fast{background:var(--warn-soft);color:var(--warn)}
+.res-price{font-family:'Outfit';font-weight:800;font-size:20px;color:var(--navy);letter-spacing:-0.02em}
+.res-price small{font-size:12px;color:var(--text3);font-weight:600}
+.res-meta{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap}
+.res-meta div{font-size:12px;color:var(--text2)}
+.res-meta b{color:var(--navy);font-weight:700}
+.summary{background:var(--navy);color:#fff;border-radius:16px;padding:16px;margin-bottom:12px}
+.summary h4{font-size:15px;margin-bottom:10px}
+.summary .srow{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.08)}
+.summary .srow:last-child{border:none}
+.summary .srow .k{color:rgba(255,255,255,0.6)}
+.summary .srow .v{font-weight:600;text-align:right}
+.disclaimer{background:var(--warn-soft);border:1px solid #f0d9bd;border-radius:12px;padding:11px 13px;font-size:12px;color:#8a5a23;line-height:1.4;margin:4px 0 12px;display:flex;gap:9px}
+.disclaimer svg{width:17px;height:17px;stroke:var(--warn);flex-shrink:0;margin-top:1px;fill:none}
+.escalate-box{background:#fff;border:1px dashed var(--blue);border-radius:16px;padding:18px;text-align:center;margin-bottom:12px}
+.escalate-box .big{font-size:36px;margin-bottom:8px}
+.escalate-box p{font-size:13.5px;color:var(--text2);margin:0 0 14px;line-height:1.45}
+.empty-hint{text-align:center;color:var(--text3);font-size:13px;padding:30px 20px;line-height:1.5}
+.empty-hint .big{font-size:40px;margin-bottom:8px;opacity:.8}
+
+/* Tracking */
+.track-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-top:14px}
+.track-status{display:inline-flex;align-items:center;gap:7px;background:var(--ok-soft);color:var(--ok);font-weight:700;font-size:13px;padding:6px 12px;border-radius:20px;margin-bottom:12px}
+.track-status .d{width:7px;height:7px;border-radius:50%;background:var(--ok)}
+.tl{position:relative;padding-left:22px}
+.tl::before{content:"";position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--border2)}
+.tl-item{position:relative;padding-bottom:14px}
+.tl-item::before{content:"";position:absolute;left:-19px;top:3px;width:11px;height:11px;border-radius:50%;background:#fff;border:2.5px solid var(--border2)}
+.tl-item.done::before{border-color:var(--blue);background:var(--blue)}
+.tl-item .tt{font-weight:700;font-size:13px;color:var(--navy)}
+.tl-item .ts{font-size:11.5px;color:var(--text3)}
+
+/* Managers */
+.mgr-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:15px;margin-bottom:11px}
+.mgr-top{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+.mgr-ico{width:44px;height:44px;border-radius:12px;background:var(--navy);display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0}
+.mgr-name{font-family:'Outfit';font-weight:700;font-size:15.5px;color:var(--navy)}
+.mgr-desc{font-size:11.5px;color:var(--text3);line-height:1.35;margin-top:2px}
+.mgr-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.mgr-act{border:1px solid var(--border2);border-radius:11px;padding:9px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text2);font-size:10.5px;font-weight:600}
+.mgr-act:active{background:var(--bg)}
+.mgr-act svg{width:18px;height:18px;stroke:var(--blue);fill:none}
+.mgr-primary{grid-column:1/-1;background:var(--blue);color:#fff;border-radius:11px;padding:11px;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;gap:7px}
+.mgr-primary svg{stroke:#fff}
+
+/* Info */
+.info-block{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
+.info-block h3{font-size:16px;color:var(--navy);margin-bottom:8px}
+.info-block p{font-size:13.5px;color:var(--text2);line-height:1.5;margin:0 0 8px}
+.svc-list{display:flex;flex-direction:column;gap:9px}
+.svc-item{display:flex;gap:11px;align-items:flex-start}
+.svc-item .si{width:34px;height:34px;border-radius:10px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.svc-item .st{font-weight:700;font-size:14px;color:var(--navy)}
+.svc-item .sd{font-size:12px;color:var(--text3);line-height:1.35}
+.contact-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.contact-row:last-child{border:none}
+.contact-row .ci{width:38px;height:38px;border-radius:10px;background:var(--blue-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.contact-row .ci svg{width:18px;height:18px;stroke:var(--blue);fill:none}
+.contact-row .cl{font-size:10.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--text3);font-weight:700}
+.contact-row .cv{font-size:14px;color:var(--navy);font-weight:600}
+
+/* Bottom nav */
+.tabbar{background:var(--navy);display:flex;justify-content:space-around;padding:8px 4px calc(8px + var(--sab));flex-shrink:0;position:sticky;bottom:0;z-index:30}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;color:rgba(255,255,255,0.5);padding:4px 0;font-size:9.5px;font-weight:600}
+.tab svg{width:21px;height:21px;stroke:currentColor;fill:none;stroke-width:1.9}
+.tab.on{color:#fff}.tab.on svg{stroke:var(--blue2)}
+
+/* FAB quick contact */
+.fab{position:fixed;right:calc(50% - 260px + 16px);bottom:calc(82px + var(--sab));width:52px;height:52px;border-radius:50%;background:var(--blue);box-shadow:0 6px 20px rgba(30,123,232,0.45);display:flex;align-items:center;justify-content:center;z-index:40}
+@media(max-width:540px){.fab{right:18px}}
+.fab svg{width:24px;height:24px;stroke:#fff;fill:none}
+.fab:active{transform:scale(0.92)}
+
+/* Sheet / modal */
+.sheet-bg{position:fixed;inset:0;background:rgba(11,25,41,0.5);z-index:50;display:none;align-items:flex-end;backdrop-filter:blur(2px)}
+.sheet-bg.on{display:flex;animation:fade .2s}
+.sheet{background:var(--bg);width:100%;max-width:520px;margin:0 auto;border-radius:22px 22px 0 0;padding:20px 18px calc(20px + var(--sab));animation:up .28s cubic-bezier(.2,.8,.2,1);max-height:90vh;overflow-y:auto;position:relative}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet h3{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.sheet .sub{font-size:13px;color:var(--text3);margin-bottom:16px}
+.sheet-close{position:absolute;right:18px;top:16px;width:30px;height:30px;border-radius:50%;background:var(--border);color:var(--text2);font-size:16px;display:flex;align-items:center;justify-content:center}
+.qc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qc-btn{display:flex;align-items:center;gap:10px;border:1px solid var(--border2);border-radius:13px;padding:13px;background:#fff;font-weight:600;font-size:13.5px;color:var(--navy)}
+.qc-btn .qci{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.qc-btn svg{width:18px;height:18px;stroke:#fff;fill:none}
+.toast{position:fixed;left:50%;bottom:calc(90px + var(--sab));transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 18px;border-radius:12px;font-size:13px;font-weight:600;z-index:60;opacity:0;transition:opacity .25s;box-shadow:var(--shadow);max-width:90%;text-align:center}
+.toast.on{opacity:1}
+.inco-list{font-size:13px;color:var(--text2);line-height:1.5}
+.inco-list b{color:var(--navy)}
+.admin-area textarea{width:100%;height:230px;border:1px solid var(--border2);border-radius:12px;padding:12px;font-family:monospace;font-size:11px;color:var(--text);background:#fff;line-height:1.4}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px}
+.stat-box .n{font-family:'Outfit';font-weight:800;font-size:24px;color:var(--blue)}
+.stat-box .l{font-size:11px;color:var(--text3);margin-top:2px}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="appbar">
+    <div class="brand" id="brandTap">
+      <svg class="brand-logo" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-label="Evolution Logistics">
+        <rect width="40" height="40" rx="9" fill="#1E7BE8"/>
+        <path d="M11 26 L20 9 L29 26 Z" fill="none" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M14.5 22.5 L25.5 22.5" stroke="#5AABFF" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="20" cy="18" r="2" fill="#fff"/>
+      </svg>
+      <div class="brand-txt"><span class="brand-name">Evolution Logistics</span><span class="brand-sub" data-i="tagline">AI-помощник</span></div>
+    </div>
+    <div class="langs" id="langs">
+      <button data-l="ru" class="on">RU</button><button data-l="en">EN</button><button data-l="uz">O'z</button><button data-l="zh">中文</button>
+    </div>
+  </div>
+
+  <div class="views" id="views">
+    <!-- HOME -->
+    <section class="view on" id="view-home">
+      <div class="hero">
+        <div class="hero-eyebrow"><span class="dot"></span><span data-i="online">Менеджеры на связи · с 2006 года</span></div>
+        <h1 data-i="hero_h">Перевезём ваш груз<br>в любую точку мира</h1>
+        <p data-i="hero_p">Авиа · Авто · Ж/Д · Море · Мультимодаль. Расчёт, КП и заявка — не выходя из Telegram.</p>
+        <div class="hero-badges"><span class="hbadge" data-i="b_lic">Лицензия МТ РУз АТ №2122006</span><span class="hbadge">24/7</span></div>
+      </div>
+      <div class="section-label" data-i="quick">Что хотите сделать?</div>
+      <div class="grid2">
+        <button class="qcard" onclick="go('calc')"><span class="ico">🧮</span><span class="t" data-i="h_calc">Рассчитать стоимость</span><span class="d" data-i="h_calc_d">Ставка, срок, транспорт</span></button>
+        <button class="qcard" onclick="go('chat')"><span class="ico">💬</span><span class="t" data-i="h_ai">AI-консультант</span><span class="d" data-i="h_ai_d">Маршруты, таможня, Incoterms</span></button>
+        <button class="qcard" onclick="go('track')"><span class="ico">📦</span><span class="t" data-i="h_track">Отследить груз</span><span class="d" data-i="h_track_d">AWB · CMR · контейнер · заявка</span></button>
+        <button class="qcard" onclick="go('calc')"><span class="ico">📄</span><span class="t" data-i="h_quote">Получить КП</span><span class="d" data-i="h_quote_d">PDF с расчётом и условиями</span></button>
+        <button class="qcard" onclick="go('mgrs')"><span class="ico">🧑‍💼</span><span class="t" data-i="h_mgr">Связаться с менеджером</span><span class="d" data-i="h_mgr_d">По вашему направлению</span></button>
+        <button class="qcard" onclick="openInfo('about')"><span class="ico">🏢</span><span class="t" data-i="h_about">О компании</span><span class="d" data-i="h_about_d">18+ лет на рынке</span></button>
+        <button class="qcard" onclick="openInfo('services')"><span class="ico">🚚</span><span class="t" data-i="h_serv">Наши услуги</span><span class="d" data-i="h_serv_d">Полный цикл логистики</span></button>
+        <button class="qcard" onclick="openInfo('contacts')"><span class="ico">📍</span><span class="t" data-i="h_cont">Контакты</span><span class="d" data-i="h_cont_d">Адрес, телефон, реквизиты</span></button>
+      </div>
+      <div class="section-label" data-i="popular">Тарифные направления</div>
+      <div class="routes-strip" id="routesStrip"></div>
+    </section>
+
+    <!-- CHAT -->
+    <section class="view" id="view-chat">
+      <div class="chat-banner"><div class="av"></div><div><div class="nm" data-i="ai_name">AI-помощник Evolution</div><div class="st"><span class="d"></span><span data-i="ai_status">онлайн · отвечает за секунды</span></div></div></div>
+      <div class="chat-scroll" id="chatScroll"></div>
+      <div class="chips" id="chatChips"></div>
+      <div class="chat-input">
+        <input type="file" id="docFile" accept="image/*,application/pdf" hidden>
+        <button class="ic-btn" id="attachBtn" title="Документ" onclick="document.getElementById('docFile').click()"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+        <button class="ic-btn" id="micBtn" title="Голос" onclick="toggleVoice()"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg></button>
+        <textarea id="chatInput" rows="1" data-i-ph=" chat_ph" placeholder="Напишите сообщение…"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendChat()"><svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      </div>
+    </section>
+
+    <!-- CALCULATOR -->
+    <section class="view" id="view-calc">
+      <div class="section-label" style="margin-top:4px" data-i="calc_title">Расчёт стоимости перевозки</div>
+      <div class="row2">
+        <div class="field"><label data-i="from">Откуда</label><select id="cFrom"></select></div>
+        <div class="field"><label data-i="to">Куда</label><select id="cTo"></select></div>
+      </div>
+      <div class="field"><label data-i="transport">Вид транспорта</label>
+        <select id="cMode"><option value="any" data-i="m_any">Все доступные</option><option value="air" data-i="m_air">✈️ Авиа</option><option value="rail" data-i="m_rail">🚆 Ж/Д</option><option value="road" data-i="m_road">🚛 Авто</option><option value="sea" data-i="m_sea">🚢 Море</option><option value="multi" data-i="m_multi">🔄 Мультимодаль</option></select>
+      </div>
+      <div class="row2">
+        <div class="field"><label data-i="weight">Вес, кг</label><input id="cWeight" type="number" inputmode="numeric" placeholder="1000"></div>
+        <div class="field"><label data-i="volume">Объём, м³</label><input id="cVolume" type="number" inputmode="decimal" placeholder="3"></div>
+      </div>
+      <div class="field"><label data-i="incoterms">Условия поставки (Incoterms) <span class="q" onclick="openSheet('sheetInco')">?</span></label>
+        <select id="cInco"><option value="" data-i="i_unknown">Не знаю / подскажите</option><option>EXW</option><option>FCA</option><option>FOB</option><option>CFR</option><option>CIF</option><option>CPT</option><option>CIP</option><option>DAP</option><option>DPU</option><option>DDP</option></select>
+      </div>
+      <div class="field"><label data-i="cargo">Наименование груза</label><input id="cCargoName" data-i-ph=" cargo_ph" placeholder="Напр.: оборудование"></div>
+      <label class="field" style="margin-bottom:7px"><span style="display:block;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);font-weight:700;margin-bottom:6px" data-i="extras">Дополнительно</span></label>
+      <div class="checks" id="extraChecks"></div>
+      <button class="btn-primary" onclick="calcRun()"><svg viewBox="0 0 24 24" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span data-i="calc_go">Рассчитать</span></button>
+      <div id="calcResults" style="margin-top:16px"><div class="empty-hint"><div class="big">📦</div><span data-i="calc_empty">Заполните маршрут и параметры — покажем тариф из базы Evolution Logistics.</span></div></div>
+    </section>
+
+    <!-- TRACKING -->
+    <section class="view" id="view-track">
+      <div class="section-label" style="margin-top:4px" data-i="track_title">Отслеживание груза</div>
+      <div class="field"><label data-i="track_lbl">Номер AWB / CMR / контейнера / заявки</label><input id="trackNo" data-i-ph=" track_ph" placeholder="EVL-... / AWB ..."></div>
+      <button class="btn-primary btn-blue" onclick="trackRun()"><svg viewBox="0 0 24 24" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><span data-i="track_go">Найти</span></button>
+      <div id="trackResult"></div>
+      <p style="font-size:11.5px;color:var(--text3);text-align:center;margin-top:14px" data-i="track_hint">Для демо: попробуйте EVL-2024-1001 или AWB-555-12345678</p>
+    </section>
+
+    <!-- MANAGERS -->
+    <section class="view" id="view-mgrs">
+      <div class="section-label" style="margin-top:4px" data-i="mgr_title">Связь с менеджером по направлению</div>
+      <div id="mgrList"></div>
+    </section>
+
+    <!-- INFO -->
+    <section class="view" id="view-info"><div id="infoBody"></div></section>
+
+    <!-- ADMIN -->
+    <section class="view" id="view-admin">
+      <div class="section-label" style="margin-top:4px">⚙️ Админ-панель (демо)</div>
+      <div class="stat-grid" id="adminStats"></div>
+      <div class="info-block admin-area">
+        <h3>База тарифов</h3>
+        <p style="font-size:12px;color:var(--text3)">Редактируйте JSON тарифов. В продакшене — выносится в БД/серверную админку (см. README).</p>
+        <textarea id="adminTariffs"></textarea>
+        <div class="row2" style="margin-top:10px">
+          <button class="btn-primary btn-blue" style="margin:0;padding:12px;font-size:13px" onclick="adminSave()">💾 Сохранить</button>
+          <button class="btn-primary btn-outline" style="margin:0;padding:12px;font-size:13px" onclick="adminReset()">↩︎ Сбросить</button>
+        </div>
+        <button class="btn-primary" style="background:var(--text3);margin-top:8px;padding:11px;font-size:12px" onclick="go('home')">Выйти из админки</button>
+      </div>
+    </section>
+  </div>
+
+  <nav class="tabbar" id="tabbar">
+    <button class="tab on" data-v="home" onclick="go('home')"><svg viewBox="0 0 24 24"><path d="M3 9.5 12 3l9 6.5"/><path d="M5 10v10h14V10"/></svg><span data-i="t_home">Главная</span></button>
+    <button class="tab" data-v="chat" onclick="go('chat')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span data-i="t_chat">AI-чат</span></button>
+    <button class="tab" data-v="calc" onclick="go('calc')"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="8" y1="16" x2="12" y2="16"/></svg><span data-i="t_calc">Расчёт</span></button>
+    <button class="tab" data-v="track" onclick="go('track')"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/></svg><span data-i="t_track">Трекинг</span></button>
+    <button class="tab" data-v="mgrs" onclick="go('mgrs')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span data-i="t_mgr">Менеджеры</span></button>
+  </nav>
+
+  <button class="fab" onclick="openSheet('sheetContact')" title="Связь"><svg viewBox="0 0 24 24" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13 1 .37 1.96.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.33 1.81.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+</div>
+
+<!-- Quick contact sheet -->
+<div class="sheet-bg" id="sheetContact" onclick="if(event.target===this)closeSheets()">
+  <div class="sheet"><button class="sheet-close" onclick="closeSheets()">✕</button>
+    <h3 data-i="qc_h">Связь в один клик</h3><p class="sub" data-i="qc_sub">Выберите удобный канал — ответим быстро.</p>
+    <div class="qc-grid">
+      <a class="qc-btn" id="qcTg"><span class="qci" style="background:#229ED9"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></span>Telegram</a>
+      <a class="qc-btn" id="qcWa"><span class="qci" style="background:#25D366"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>WhatsApp</a>
+      <a class="qc-btn" id="qcTel"><span class="qci" style="background:var(--navy)"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13 1 .37 1.96.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.33 1.81.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span><span data-i="call">Позвонить</span></a>
+      <a class="qc-btn" id="qcMail"><span class="qci" style="background:var(--blue)"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></span>Email</a>
+    </div>
+  </div>
+</div>
+
+<!-- Incoterms sheet -->
+<div class="sheet-bg" id="sheetInco" onclick="if(event.target===this)closeSheets()">
+  <div class="sheet"><button class="sheet-close" onclick="closeSheets()">✕</button>
+    <h3 data-i="inco_h">Условия поставки (Incoterms)</h3><p class="sub" data-i="inco_sub">Кто за что отвечает в перевозке.</p>
+    <div class="inco-list" id="incoList"></div>
+  </div>
+</div>
+
+<!-- Order / escalation sheet -->
+<div class="sheet-bg" id="sheetOrder" onclick="if(event.target===this)closeSheets()">
+  <div class="sheet"><button class="sheet-close" onclick="closeSheets()">✕</button>
+    <h3 id="orderH" data-i="esc_h">Оформить заявку</h3><p class="sub" id="orderSub" data-i="esc_sub">Оставьте контакт — ответственный менеджер свяжется в течение 2 часов.</p>
+    <div class="field"><label data-i="esc_name">Имя</label><input id="escName" placeholder="—"></div>
+    <div class="field"><label data-i="esc_phone">Телефон или Telegram</label><input id="escPhone" placeholder="+998 …"></div>
+    <div class="field"><label data-i="esc_note">Комментарий / детали</label><textarea id="escNote" rows="3" style="width:100%;border:1px solid var(--border2);border-radius:12px;padding:12px 13px;font-size:14px;resize:none;color:var(--text);background:var(--card)" placeholder="—"></textarea></div>
+    <button class="btn-primary" onclick="submitOrder()"><span id="orderBtn" data-i="esc_send">Отправить менеджеру</span></button>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
 /* ============================================================
-   Evolution Logistics — Cloudflare Worker (v2, production-hardened)
-   Ikki route:
-     POST /ai   -> Anthropic API proksi (auth, timeout, validation bilan)
-     POST /lead -> Telegram guruh/kanal + CRM'ga yetkazish (validation,
-                   dublikat filtri, xavfsiz formatlash bilan)
- 
-   KERAKLI ENV O'ZGARUVCHILARI (Worker -> Settings -> Variables):
-     ANTHROPIC_API_KEY   (Secret, majburiy)
-     TELEGRAM_BOT_TOKEN  (Secret, majburiy /lead uchun)
-     TELEGRAM_GROUP_ID   (oddiy, ixtiyoriy)
-     TELEGRAM_CHANNEL_ID (oddiy, ixtiyoriy)
-     APP_KEY             (Secret, majburiy — frontend shu kalitni
-                           X-App-Key header orqali yuboradi)
-     ALLOWED_ORIGIN       (oddiy, masalan https://evolutionlogistics.uz)
-     CRM_WEBHOOK_URL      (oddiy, ixtiyoriy, kelajakda)
- 
-   IXTIYORIY BOG'LASH (wrangler.toml yoki Dashboard -> Bindings):
-     LEADS_KV  (KV namespace) — dublikat arizalarni filtrlash uchun.
-               Bo'lmasa, dedup jimgina o'chirilib qoladi (xato bermaydi).
- 
-   ESLATMA (halollik uchun): X-App-Key frontend JS kodida ko'rinadi —
-   bu "tasodifiy skanerlash/botlar"dan himoya qiladi, lekin sahifa
-   manbasini ko'radigan qasddan xurujchidan to'liq himoya emas.
-   Haqiqiy ishonch chegarasi — Cloudflare Dashboard'dagi Rate Limiting
-   Rules va WAF, ular kodsiz sozlanadi va bu Worker ularni
-   almashtirmaydi, balki to'ldiradi.
+   Evolution Logistics — Telegram Mini App (v2)
    ============================================================ */
- 
-const MAX_AI_BODY_BYTES = 15 * 1024 * 1024;   // rasm/PDF uchun katta limit
-const MAX_LEAD_BODY_BYTES = 20 * 1024;         // /lead faqat matn, kichik limit
-const AI_TIMEOUT_MS = 25000;
-const RATE_LIMIT_WINDOW_MS = 60000;
-const RATE_LIMIT_MAX_AI = 20;   // 1 daqiqada 1 IP uchun
-const RATE_LIMIT_MAX_LEAD = 10;
- 
-// Diqqat: bu oddiy xotiradagi (in-memory) counter — faqat bitta Worker
-// nusxasi (isolate) doirasida ishlaydi, global emas. Chin production
-// himoyasi uchun Cloudflare Dashboard -> Security -> Rate Limiting Rules
-// qo'shing (kodsiz, global, ishonchli). Bu yerdagi kod — qo'shimcha ichki qatlam.
-const rateBuckets = new Map();
- 
-function isRateLimited(key, max) {
-  const now = Date.now();
-  const bucket = rateBuckets.get(key) || [];
-  const fresh = bucket.filter((t) => now - t < RATE_LIMIT_WINDOW_MS);
-  fresh.push(now);
-  rateBuckets.set(key, fresh);
-  if (rateBuckets.size > 5000) {
-    // eskirgan kalitlarni tozalash (xotira sizib ketmasligi uchun)
-    for (const [k, v] of rateBuckets) {
-      if (!v.some((t) => now - t < RATE_LIMIT_WINDOW_MS)) rateBuckets.delete(k);
-    }
-  }
-  return fresh.length > max;
-}
- 
-function corsHeaders(env) {
-  const origin = env.ALLOWED_ORIGIN || "*";
-  return {
-    "Access-Control-Allow-Origin": origin,
-    "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, anthropic-version, X-App-Key",
-    "Vary": "Origin",
-  };
-}
- 
-function securityHeaders() {
-  return {
-    "X-Content-Type-Options": "nosniff",
-    "Referrer-Policy": "no-referrer",
-    "Cache-Control": "no-store",
-  };
-}
- 
-function jsonResponse(obj, status, env) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: {
-      "Content-Type": "application/json",
-      ...corsHeaders(env),
-      ...securityHeaders(),
-    },
-  });
-}
- 
-function clientIp(request) {
-  return request.headers.get("CF-Connecting-IP") || "unknown";
-}
- 
-function checkAuth(request, env) {
-  if (!env.APP_KEY) return true; // APP_KEY sozlanmagan bo'lsa, auth o'chirilgan hisoblanadi (dev rejimi)
-  return request.headers.get("X-App-Key") === env.APP_KEY;
-}
- 
-async function readJsonWithLimit(request, maxBytes) {
-  const len = request.headers.get("Content-Length");
-  if (len && Number(len) > maxBytes) {
-    throw new Error("PAYLOAD_TOO_LARGE");
-  }
-  const text = await request.text();
-  if (text.length > maxBytes) throw new Error("PAYLOAD_TOO_LARGE");
-  try {
-    return JSON.parse(text);
-  } catch (e) {
-    throw new Error("BAD_JSON");
-  }
-}
- 
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
- 
-    if (request.method === "OPTIONS") {
-      return new Response(null, { headers: { ...corsHeaders(env), ...securityHeaders() } });
-    }
- 
-    try {
-      if (url.pathname === "/ai") return await handleAI(request, env);
-      if (url.pathname === "/lead") return await handleLead(request, env);
-    } catch (e) {
-      console.error("UNHANDLED_ERROR", e && e.message);
-      return jsonResponse({ ok: false, error: "internal_error" }, 500, env);
-    }
- 
-    return jsonResponse({ ok: false, error: "not_found" }, 404, env);
-  },
+const CONFIG = {
+  phone:'998908177627', whatsapp:'998908177627', email:'evolutionlogistics.uz@gmail.com',
+  tgFallback:'evolution_logistics_uz',
+  aiEndpoint:'https://api.anthropic.com/v1/messages', // PROD: set to your backend proxy (see README)
+  aiModel:'claude-sonnet-4-6'
 };
- 
-/* ================= /ai : Anthropic proksi ================= */
-async function handleAI(request, env) {
-  if (request.method !== "POST") {
-    return jsonResponse({ ok: false, error: "method_not_allowed" }, 405, env);
-  }
-  if (!checkAuth(request, env)) {
-    console.warn("AI_AUTH_REJECTED", clientIp(request));
-    return jsonResponse({ ok: false, error: "unauthorized" }, 401, env);
-  }
-  if (isRateLimited("ai:" + clientIp(request), RATE_LIMIT_MAX_AI)) {
-    console.warn("AI_RATE_LIMITED", clientIp(request));
-    return jsonResponse({ ok: false, error: "rate_limited" }, 429, env);
-  }
- 
-  let payload;
-  try {
-    payload = await readJsonWithLimit(request, MAX_AI_BODY_BYTES);
-  } catch (e) {
-    const status = e.message === "PAYLOAD_TOO_LARGE" ? 413 : 400;
-    return jsonResponse({ ok: false, error: e.message.toLowerCase() }, status, env);
-  }
- 
-  // Minimal so'rov validatsiyasi — Anthropic kutgan maydonlar bor-yo'qligini tekshiramiz
-  if (!payload || typeof payload !== "object" || !payload.model || !Array.isArray(payload.messages) || !payload.max_tokens) {
-    return jsonResponse({ ok: false, error: "invalid_request", detail: "model, messages[], max_tokens majburiy" }, 400, env);
-  }
-  if (payload.messages.length > 40) {
-    return jsonResponse({ ok: false, error: "invalid_request", detail: "messages juda uzun" }, 400, env);
-  }
- 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
- 
-  let r;
-  try {
-    r = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
-      },
-      body: JSON.stringify(payload),
-      signal: controller.signal,
-    });
-  } catch (e) {
-    clearTimeout(timeoutId);
-    if (e.name === "AbortError") {
-      console.error("AI_TIMEOUT", clientIp(request));
-      return jsonResponse({ ok: false, error: "ai_timeout" }, 504, env);
-    }
-    console.error("AI_FETCH_FAILED", e.message);
-    return jsonResponse({ ok: false, error: "ai_unreachable" }, 502, env);
-  }
-  clearTimeout(timeoutId);
- 
-  const bodyText = await r.text();
- 
-  if (!r.ok) {
-    console.error("AI_UPSTREAM_ERROR", r.status, bodyText.slice(0, 300));
-    return jsonResponse(
-      { ok: false, error: "ai_upstream_error", status: r.status, detail: safeParseJson(bodyText) },
-      r.status >= 400 && r.status < 500 ? r.status : 502,
-      env
-    );
-  }
- 
-  console.log("AI_OK", clientIp(request));
-  return new Response(bodyText, {
-    status: 200,
-    headers: { "Content-Type": "application/json", ...corsHeaders(env), ...securityHeaders() },
+const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+const inTG = !!(tg && tg.initData !== undefined && tg.platform && tg.platform!=='unknown');
+function haptic(type){ try{ if(tg&&tg.HapticFeedback){ if(type==='sel')tg.HapticFeedback.selectionChanged(); else tg.HapticFeedback.impactOccurred(type||'light'); } }catch(e){} }
+function store(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
+function load(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
+
+/* ---------- TARIFF BASE (admin data; sample — replace with real) ----------
+   Per ТЗ §5/§18: rates ONLY from this base. No lane -> escalate to a specialist. */
+const TARIFFS_SEED = [
+ // from(country,city) -> to(country,city) ; mode ; min ; max ; unit ; transit days
+ {fc:'Китай',fct:'Гуанчжоу',tc:'Узбекистан',tct:'Ташкент',mode:'air',min:4.5,max:5.8,unit:'USD/кг',tmin:5,tmax:7,upd:'2024-06'},
+ {fc:'Китай',fct:'Гуанчжоу',tc:'Узбекистан',tct:'Ташкент',mode:'rail',min:5500,max:7200,unit:'USD/40ft',tmin:18,tmax:25,upd:'2024-06'},
+ {fc:'Китай',fct:'Гуанчжоу',tc:'Узбекистан',tct:'Ташкент',mode:'road',min:6800,max:8500,unit:'USD/фура',tmin:16,tmax:22,upd:'2024-06'},
+ {fc:'Китай',fct:'Шанхай',tc:'Узбекистан',tct:'Ташкент',mode:'air',min:4.8,max:6.0,unit:'USD/кг',tmin:6,tmax:8,upd:'2024-06'},
+ {fc:'Китай',fct:'Шанхай',tc:'Узбекистан',tct:'Ташкент',mode:'rail',min:5600,max:7400,unit:'USD/40ft',tmin:18,tmax:26,upd:'2024-06'},
+ {fc:'Китай',fct:'Иу',tc:'Узбекистан',tct:'Ташкент',mode:'road',min:6500,max:8200,unit:'USD/фура',tmin:18,tmax:24,upd:'2024-06'},
+ {fc:'Узбекистан',fct:'Ташкент',tc:'Россия',tct:'Москва',mode:'air',min:2.8,max:3.8,unit:'USD/кг',tmin:2,tmax:3,upd:'2024-06'},
+ {fc:'Узбекистан',fct:'Ташкент',tc:'Россия',tct:'Москва',mode:'rail',min:2600,max:3400,unit:'USD/40ft',tmin:12,tmax:16,upd:'2024-06'},
+ {fc:'Узбекистан',fct:'Ташкент',tc:'Россия',tct:'Москва',mode:'road',min:2900,max:3800,unit:'USD/фура',tmin:6,tmax:9,upd:'2024-06'},
+ {fc:'Россия',fct:'Москва',tc:'Узбекистан',tct:'Ташкент',mode:'road',min:2800,max:3700,unit:'USD/фура',tmin:6,tmax:9,upd:'2024-06'},
+ {fc:'Узбекистан',fct:'Ташкент',tc:'Казахстан',tct:'Алматы',mode:'road',min:900,max:1400,unit:'USD/фура',tmin:2,tmax:3,upd:'2024-06'},
+ {fc:'Узбекистан',fct:'Ташкент',tc:'Турция',tct:'Стамбул',mode:'air',min:3.2,max:4.2,unit:'USD/кг',tmin:3,tmax:4,upd:'2024-06'},
+ {fc:'Узбекистан',fct:'Ташкент',tc:'Турция',tct:'Стамбул',mode:'road',min:4200,max:5400,unit:'USD/фура',tmin:8,tmax:12,upd:'2024-06'},
+ {fc:'Узбекистан',fct:'Ташкент',tc:'ОАЭ',tct:'Дубай',mode:'air',min:2.6,max:3.6,unit:'USD/кг',tmin:2,tmax:4,upd:'2024-06'},
+ {fc:'Узбекистан',fct:'Ташкент',tc:'Германия',tct:'Гамбург',mode:'air',min:3.8,max:5.0,unit:'USD/кг',tmin:4,tmax:6,upd:'2024-06'},
+ {fc:'Узбекистан',fct:'Ташкент',tc:'Германия',tct:'Гамбург',mode:'rail',min:4200,max:5600,unit:'USD/40ft',tmin:16,tmax:22,upd:'2024-06'},
+ {fc:'Узбекистан',fct:'Ташкент',tc:'Германия',tct:'Гамбург',mode:'road',min:5200,max:6800,unit:'USD/фура',tmin:12,tmax:18,upd:'2024-06'},
+ {fc:'Узбекистан',fct:'Ташкент',tc:'Китай',tct:'Гуанчжоу',mode:'air',min:4.2,max:5.5,unit:'USD/кг',tmin:5,tmax:7,upd:'2024-06'},
+ {fc:'Южная Корея',fct:'Сеул',tc:'Узбекистан',tct:'Ташкент',mode:'air',min:4.5,max:5.8,unit:'USD/кг',tmin:5,tmax:7,upd:'2024-06'},
+ {fc:'Германия',fct:'Гамбург',tc:'Узбекистан',tct:'Ташкент',mode:'rail',min:4000,max:5400,unit:'USD/40ft',tmin:16,tmax:22,upd:'2024-06'}
+];
+let TARIFFS = (()=>{ const s=load('evo_tariffs'); if(s){ try{return JSON.parse(s);}catch(e){} } return TARIFFS_SEED.slice(); })();
+
+/* tracking sample data (admin/back-office; replace with real integration) */
+const TRACKING = {
+ 'EVL-2024-1001':{status:{ru:'В пути',en:'In transit',uz:'Yo\'lda',zh:'运输中'},date:'2024-06-18 14:20',loc:{ru:'Алматы, Казахстан',en:'Almaty, Kazakhstan',uz:'Olmaota, Qozog\'iston',zh:'阿拉木图，哈萨克斯坦'},hist:[['Принят груз','Гуанчжоу',1],['Таможня экспорт','Гуанчжоу',1],['В пути','Хоргос',1],['В пути','Алматы',1],['Прибытие','Ташкент',0]]},
+ 'AWB-555-12345678':{status:{ru:'Прибыл, ожидает выдачи',en:'Arrived, awaiting pickup',uz:'Yetib keldi',zh:'已到达'},date:'2024-06-19 09:05',loc:{ru:'Ташкент, аэропорт',en:'Tashkent airport',uz:'Toshkent aeroporti',zh:'塔什干机场'},hist:[['Принят груз','Стамбул',1],['Вылет','Стамбул',1],['Прибытие','Ташкент',1],['Растаможка','Ташкент',0]]}
+};
+
+/* ---------- i18n ---------- */
+const I = {
+ ru:{tagline:'AI-помощник',online:'Менеджеры на связи · с 2006 года',hero_h:'Перевезём ваш груз<br>в любую точку мира',hero_p:'Авиа · Авто · Ж/Д · Море · Мультимодаль. Расчёт, КП и заявка — не выходя из Telegram.',b_lic:'Лицензия МТ РУз АТ №2122006',quick:'Что хотите сделать?',h_calc:'Рассчитать стоимость',h_calc_d:'Ставка, срок, транспорт',h_ai:'AI-консультант',h_ai_d:'Маршруты, таможня, Incoterms',h_track:'Отследить груз',h_track_d:'AWB · CMR · контейнер · заявка',h_quote:'Получить КП',h_quote_d:'PDF с расчётом и условиями',h_mgr:'Связаться с менеджером',h_mgr_d:'По вашему направлению',h_about:'О компании',h_about_d:'18+ лет на рынке',h_serv:'Наши услуги',h_serv_d:'Полный цикл логистики',h_cont:'Контакты',h_cont_d:'Адрес, телефон, реквизиты',popular:'Тарифные направления',ai_name:'AI-помощник Evolution',ai_status:'онлайн · отвечает за секунды',chat_ph:'Напишите сообщение…',calc_title:'Расчёт стоимости перевозки',from:'Откуда',to:'Куда',transport:'Вид транспорта',m_any:'Все доступные',m_air:'✈️ Авиа',m_rail:'🚆 Ж/Д',m_road:'🚛 Авто',m_sea:'🚢 Море',m_multi:'🔄 Мультимодаль',weight:'Вес, кг',volume:'Объём, м³',incoterms:'Условия поставки (Incoterms)',i_unknown:'Не знаю / подскажите',cargo:'Наименование груза',cargo_ph:'Напр.: оборудование',extras:'Дополнительно',calc_go:'Рассчитать',calc_empty:'Заполните маршрут и параметры — покажем тариф из базы Evolution Logistics.',track_title:'Отслеживание груза',track_lbl:'Номер AWB / CMR / контейнера / заявки',track_ph:'EVL-... / AWB ...',track_go:'Найти',track_hint:'Для демо: попробуйте EVL-2024-1001 или AWB-555-12345678',mgr_title:'Связь с менеджером по направлению',t_home:'Главная',t_chat:'AI-чат',t_calc:'Расчёт',t_track:'Трекинг',t_mgr:'Менеджеры',call:'Позвонить',write:'Написать',
+   esc_h:'Оформить заявку',esc_sub:'Оставьте контакт — ответственный менеджер свяжется в течение 2 часов.',esc_name:'Имя',esc_phone:'Телефон или Telegram',esc_note:'Комментарий / детали',esc_send:'Отправить менеджеру',qc_h:'Связь в один клик',qc_sub:'Выберите удобный канал — ответим быстро.',inco_h:'Условия поставки (Incoterms)',inco_sub:'Кто за что отвечает в перевозке.',
+   transit:'срок',days:'дн.',best:'★ Оптимально',fast:'⚡ Быстрее',na_route:'Тариф по этому маршруту не найден',na_route_p:'Для получения точной ставки запрос передан специалисту Evolution Logistics. Оставьте контакт — рассчитаем индивидуально.',create_order:'Создать заявку',get_pdf:'Скачать КП (PDF)',send_spec:'Передать специалисту',disc:'Ставки — из тарифной базы Evolution Logistics. Точную цену подтвердит менеджер с учётом габаритов, сроков и таможни.',
+   sum_route:'Маршрут',sum_transport:'Транспорт',sum_transit:'Срок доставки',sum_cost:'Ориентировочная стоимость',sum_inco:'Условия поставки',sum_extra:'Доп. услуги',sum_cargo:'Груз',
+   order_created:'Заявка создана',order_num:'Номер заявки',sent_mgr:'Заявка отправлена менеджеру ✅',
+   greet:'Здравствуйте! 👋\nЯ AI-помощник компании Evolution Logistics.\n\nПомогу рассчитать стоимость перевозки, подобрать оптимальный маршрут и соединить вас со специалистом. Опишите груз и направление — или прикрепите инвойс/упаковочный лист, и я заполню заявку.',
+   chips:['Авиа Гуанчжоу → Ташкент, 800 кг','Что такое Incoterms?','Сроки до Москвы','Связать с менеджером'],
+   err:'Не удалось получить ответ. Напишите менеджеру напрямую — кнопка ниже.',voice_na:'Голосовой ввод не поддерживается в этом браузере. В Telegram отправьте голосовое — его обработает бот (см. README).',doc_sent:'📎 Документ отправлен на распознавание…',
+   extras_list:[['dangerous','Опасный груз'],['temp','Температурный режим'],['urgent','Срочно'],['customs','Таможенное оформление'],['insurance','Страхование']]},
+ en:{tagline:'AI assistant',online:'Managers online · since 2006',hero_h:'We move your cargo<br>anywhere in the world',hero_p:'Air · Road · Rail · Sea · Multimodal. Quote, offer and request — all inside Telegram.',b_lic:'MoT RUz License AT №2122006',quick:'What would you like to do?',h_calc:'Get a quote',h_calc_d:'Rate, transit, mode',h_ai:'AI consultant',h_ai_d:'Routes, customs, Incoterms',h_track:'Track cargo',h_track_d:'AWB · CMR · container · order',h_quote:'Get an offer',h_quote_d:'PDF with rate & terms',h_mgr:'Reach a manager',h_mgr_d:'For your trade lane',h_about:'About us',h_about_d:'18+ years on the market',h_serv:'Our services',h_serv_d:'Full-cycle logistics',h_cont:'Contacts',h_cont_d:'Address, phone, details',popular:'Tariff routes',ai_name:'Evolution AI assistant',ai_status:'online · replies in seconds',chat_ph:'Type a message…',calc_title:'Shipping cost estimate',from:'From',to:'To',transport:'Transport mode',m_any:'All available',m_air:'✈️ Air',m_rail:'🚆 Rail',m_road:'🚛 Road',m_sea:'🚢 Sea',m_multi:'🔄 Multimodal',weight:'Weight, kg',volume:'Volume, m³',incoterms:'Incoterms',i_unknown:'Not sure / explain',cargo:'Cargo name',cargo_ph:'e.g. equipment',extras:'Additional',calc_go:'Calculate',calc_empty:'Set route and details — we will show the rate from the Evolution Logistics tariff base.',track_title:'Cargo tracking',track_lbl:'AWB / CMR / container / order number',track_ph:'EVL-... / AWB ...',track_go:'Search',track_hint:'Demo: try EVL-2024-1001 or AWB-555-12345678',mgr_title:'Reach a manager by trade lane',t_home:'Home',t_chat:'AI chat',t_calc:'Quote',t_track:'Tracking',t_mgr:'Managers',call:'Call',write:'Message',
+   esc_h:'Create a request',esc_sub:'Leave your contact — a manager will reply within 2 hours.',esc_name:'Name',esc_phone:'Phone or Telegram',esc_note:'Comment / details',esc_send:'Send to manager',qc_h:'Contact in one tap',qc_sub:'Pick a channel — we reply fast.',inco_h:'Incoterms',inco_sub:'Who is responsible for what.',
+   transit:'transit',days:'days',best:'★ Best value',fast:'⚡ Fastest',na_route:'No tariff found for this route',na_route_p:'Your request has been forwarded to an Evolution Logistics specialist for an exact quote. Leave your contact and we will price it individually.',create_order:'Create request',get_pdf:'Download offer (PDF)',send_spec:'Forward to specialist',disc:'Rates come from the Evolution Logistics tariff base. A manager confirms the exact price based on dimensions, timing and customs.',
+   sum_route:'Route',sum_transport:'Transport',sum_transit:'Transit time',sum_cost:'Indicative cost',sum_inco:'Incoterms',sum_extra:'Extra services',sum_cargo:'Cargo',
+   order_created:'Request created',order_num:'Request no.',sent_mgr:'Request sent to a manager ✅',
+   greet:'Hello! 👋\nI am the Evolution Logistics AI assistant.\n\nI can estimate shipping cost, suggest the optimal route and connect you with a specialist. Describe your cargo and route — or attach an invoice/packing list and I will fill the request.',
+   chips:['Air Guangzhou → Tashkent, 800 kg','What are Incoterms?','Transit to Moscow','Connect me to a manager'],
+   err:'Could not get a response. Message a manager directly — button below.',voice_na:'Voice input is not supported in this browser. In Telegram send a voice message — the bot will process it (see README).',doc_sent:'📎 Document sent for recognition…',
+   extras_list:[['dangerous','Dangerous goods'],['temp','Temperature mode'],['urgent','Urgent'],['customs','Customs clearance'],['insurance','Insurance']]},
+ uz:{tagline:'AI-yordamchi',online:'Menejerlar aloqada · 2006 yildan',hero_h:'Yukingizni dunyoning<br>istalgan nuqtasiga yetkazamiz',hero_p:'Avia · Avto · Temir yo\'l · Dengiz · Multimodal. Hisob, KP va ariza — Telegramdan chiqmasdan.',b_lic:'MT RUz litsenziyasi AT №2122006',quick:'Nima qilmoqchisiz?',h_calc:'Narxni hisoblash',h_calc_d:'Stavka, muddat, transport',h_ai:'AI-konsultant',h_ai_d:'Marshrutlar, bojxona, Incoterms',h_track:'Yukni kuzatish',h_track_d:'AWB · CMR · konteyner · ariza',h_quote:'KP olish',h_quote_d:'Hisob va shartlar bilan PDF',h_mgr:'Menejer bilan aloqa',h_mgr_d:'Yo\'nalishingiz bo\'yicha',h_about:'Kompaniya haqida',h_about_d:'Bozorda 18+ yil',h_serv:'Xizmatlarimiz',h_serv_d:'To\'liq tsiklli logistika',h_cont:'Kontaktlar',h_cont_d:'Manzil, telefon, rekvizitlar',popular:'Tarif yo\'nalishlari',ai_name:'Evolution AI-yordamchi',ai_status:'onlayn · soniyalarda javob',chat_ph:'Xabar yozing…',calc_title:'Tashish narxini hisoblash',from:'Qayerdan',to:'Qayerga',transport:'Transport turi',m_any:'Barcha mavjud',m_air:'✈️ Avia',m_rail:'🚆 Temir yo\'l',m_road:'🚛 Avto',m_sea:'🚢 Dengiz',m_multi:'🔄 Multimodal',weight:'Og\'irlik, kg',volume:'Hajm, m³',incoterms:'Yetkazib berish shartlari (Incoterms)',i_unknown:'Bilmayman / tushuntiring',cargo:'Yuk nomi',cargo_ph:'Masalan: uskunalar',extras:'Qo\'shimcha',calc_go:'Hisoblash',calc_empty:'Marshrut va parametrlarni kiriting — Evolution Logistics tarif bazasidan stavkani ko\'rsatamiz.',track_title:'Yukni kuzatish',track_lbl:'AWB / CMR / konteyner / ariza raqami',track_ph:'EVL-... / AWB ...',track_go:'Topish',track_hint:'Demo: EVL-2024-1001 yoki AWB-555-12345678 ni sinab ko\'ring',mgr_title:'Yo\'nalish bo\'yicha menejer bilan aloqa',t_home:'Bosh',t_chat:'AI-chat',t_calc:'Hisob',t_track:'Kuzatuv',t_mgr:'Menejerlar',call:'Qo\'ng\'iroq',write:'Yozish',
+   esc_h:'Ariza rasmiylashtirish',esc_sub:'Kontakt qoldiring — mas\'ul menejer 2 soat ichida bog\'lanadi.',esc_name:'Ism',esc_phone:'Telefon yoki Telegram',esc_note:'Izoh / tafsilotlar',esc_send:'Menejerga yuborish',qc_h:'Bir bosishda aloqa',qc_sub:'Qulay kanalni tanlang — tez javob beramiz.',inco_h:'Yetkazib berish shartlari (Incoterms)',inco_sub:'Kim nima uchun javobgar.',
+   transit:'muddat',days:'kun',best:'★ Optimal',fast:'⚡ Eng tez',na_route:'Bu marshrut bo\'yicha tarif topilmadi',na_route_p:'Aniq stavka uchun so\'rov Evolution Logistics mutaxassisiga yuborildi. Kontakt qoldiring — individual hisoblaymiz.',create_order:'Ariza yaratish',get_pdf:'KP yuklab olish (PDF)',send_spec:'Mutaxassisga yuborish',disc:'Stavkalar Evolution Logistics tarif bazasidan. Aniq narxni menejer gabarit, muddat va bojxonani hisobga olib tasdiqlaydi.',
+   sum_route:'Marshrut',sum_transport:'Transport',sum_transit:'Yetkazish muddati',sum_cost:'Taxminiy narx',sum_inco:'Yetkazish shartlari',sum_extra:'Qo\'shimcha xizmatlar',sum_cargo:'Yuk',
+   order_created:'Ariza yaratildi',order_num:'Ariza raqami',sent_mgr:'Ariza menejerga yuborildi ✅',
+   greet:'Assalomu alaykum! 👋\nMen Evolution Logistics AI-yordamchisiman.\n\nTashish narxini hisoblash, optimal marshrut tanlash va mutaxassis bilan bog\'lashda yordam beraman. Yuk va yo\'nalishni yozing — yoki invoys/qadoqlash varag\'ini biriktiring, men arizani to\'ldiraman.',
+   chips:['Avia Guanchjou → Toshkent, 800 kg','Incoterms nima?','Moskvagacha muddat','Menejer bilan bog\'lang'],
+   err:'Javob olinmadi. Menejerga to\'g\'ridan-to\'g\'ri yozing — quyidagi tugma.',voice_na:'Bu brauzerda ovozli kiritish qo\'llab-quvvatlanmaydi. Telegramda ovozli xabar yuboring — bot uni qayta ishlaydi (README).',doc_sent:'📎 Hujjat tanishga yuborildi…',
+   extras_list:[['dangerous','Xavfli yuk'],['temp','Harorat rejimi'],['urgent','Shoshilinch'],['customs','Bojxona rasmiylashtiruvi'],['insurance','Sug\'urta']]},
+ zh:{tagline:'AI 助手',online:'经理在线 · 自 2006 年',hero_h:'将您的货物运送<br>到世界任何地方',hero_p:'空运 · 公路 · 铁路 · 海运 · 多式联运。报价、报价单和下单——全在 Telegram 内。',b_lic:'交通部许可证 AT №2122006',quick:'您想做什么？',h_calc:'计算运费',h_calc_d:'费率、时效、运输方式',h_ai:'AI 顾问',h_ai_d:'路线、报关、贸易术语',h_track:'追踪货物',h_track_d:'AWB · CMR · 集装箱 · 订单',h_quote:'获取报价单',h_quote_d:'含费率与条款的 PDF',h_mgr:'联系经理',h_mgr_d:'按您的线路',h_about:'关于我们',h_about_d:'18+ 年市场经验',h_serv:'我们的服务',h_serv_d:'全流程物流',h_cont:'联系方式',h_cont_d:'地址、电话、信息',popular:'费率线路',ai_name:'Evolution AI 助手',ai_status:'在线 · 秒级回复',chat_ph:'输入消息……',calc_title:'运费估算',from:'起点',to:'终点',transport:'运输方式',m_any:'所有可用',m_air:'✈️ 空运',m_rail:'🚆 铁路',m_road:'🚛 公路',m_sea:'🚢 海运',m_multi:'🔄 多式联运',weight:'重量 (公斤)',volume:'体积 (立方米)',incoterms:'贸易术语 (Incoterms)',i_unknown:'不确定 / 请说明',cargo:'货物名称',cargo_ph:'例如：设备',extras:'附加',calc_go:'计算',calc_empty:'填写线路和参数——我们将显示 Evolution Logistics 费率库中的费率。',track_title:'货物追踪',track_lbl:'AWB / CMR / 集装箱 / 订单号',track_ph:'EVL-... / AWB ...',track_go:'查询',track_hint:'演示：试试 EVL-2024-1001 或 AWB-555-12345678',mgr_title:'按线路联系经理',t_home:'首页',t_chat:'AI 聊天',t_calc:'报价',t_track:'追踪',t_mgr:'经理',call:'拨打',write:'发消息',
+   esc_h:'创建请求',esc_sub:'留下联系方式——负责经理将在 2 小时内回复。',esc_name:'姓名',esc_phone:'电话或 Telegram',esc_note:'备注 / 详情',esc_send:'发送给经理',qc_h:'一键联系',qc_sub:'选择渠道——我们快速回复。',inco_h:'贸易术语 (Incoterms)',inco_sub:'各方责任划分。',
+   transit:'时效',days:'天',best:'★ 最优',fast:'⚡ 最快',na_route:'未找到该线路的费率',na_route_p:'您的请求已转交 Evolution Logistics 专员以获取准确报价。请留下联系方式，我们将单独核算。',create_order:'创建请求',get_pdf:'下载报价单 (PDF)',send_spec:'转交专员',disc:'费率来自 Evolution Logistics 费率库。经理将根据尺寸、时效和报关确认准确价格。',
+   sum_route:'线路',sum_transport:'运输方式',sum_transit:'运输时效',sum_cost:'参考费用',sum_inco:'贸易术语',sum_extra:'附加服务',sum_cargo:'货物',
+   order_created:'请求已创建',order_num:'请求编号',sent_mgr:'请求已发送给经理 ✅',
+   greet:'您好！👋\n我是 Evolution Logistics 的 AI 助手。\n\n我可以帮您估算运费、推荐最优路线并为您联系专员。请描述货物和路线——或附上发票/装箱单，我来填写请求。',
+   chips:['空运 广州 → 塔什干，800 公斤','什么是 Incoterms？','到莫斯科的时效','帮我联系经理'],
+   err:'无法获取回复。请直接联系经理——下方按钮。',voice_na:'此浏览器不支持语音输入。在 Telegram 中发送语音消息，机器人会处理（见 README）。',doc_sent:'📎 文件已发送识别……',
+   extras_list:[['dangerous','危险品'],['temp','温控'],['urgent','加急'],['customs','报关'],['insurance','保险']]}
+};
+let LANG='ru';
+function t(k){ return (I[LANG]&&I[LANG][k]!==undefined)?I[LANG][k]:(I.ru[k]!==undefined?I.ru[k]:k); }
+
+const INCO = {
+ EXW:{ru:'Самовывоз со склада продавца. Все расходы и риски — на покупателе.',en:'Ex Works. Buyer bears all costs and risks from seller’s premises.',uz:'Sotuvchi omboridan o‘zi olib ketish. Barcha xarajat va xavf — xaridorda.',zh:'工厂交货。买方承担从卖方处起的全部费用和风险。'},
+ FCA:{ru:'Передача перевозчику, указанному покупателем.',en:'Free Carrier. Seller hands goods to buyer’s carrier.',uz:'Xaridor tashuvchisiga topshirish.',zh:'货交承运人。'},
+ FOB:{ru:'Поставка на борт судна в порту отправления.',en:'Free On Board (sea). On board at port of shipment.',uz:'Kema bortida yetkazish (dengiz).',zh:'船上交货（海运）。'},
+ CFR:{ru:'Стоимость и фрахт до порта назначения (без страховки).',en:'Cost and Freight to destination port (no insurance).',uz:'Tannarx va frakt (sug‘urtasiz).',zh:'成本加运费（不含保险）。'},
+ CIF:{ru:'Стоимость, страхование и фрахт до порта назначения.',en:'Cost, Insurance and Freight to destination port.',uz:'Tannarx, sug‘urta va frakt.',zh:'成本、保险加运费。'},
+ CPT:{ru:'Перевозка оплачена до пункта назначения.',en:'Carriage Paid To destination.',uz:'Tashish belgilangan joygacha to‘langan.',zh:'运费付至目的地。'},
+ CIP:{ru:'Перевозка и страхование оплачены до назначения.',en:'Carriage and Insurance Paid to destination.',uz:'Tashish va sug‘urta to‘langan.',zh:'运费、保险费付至目的地。'},
+ DAP:{ru:'Поставка в согласованном месте назначения.',en:'Delivered At Place.',uz:'Belgilangan joyda yetkazish.',zh:'目的地交货。'},
+ DPU:{ru:'Поставка с разгрузкой в месте назначения.',en:'Delivered at Place Unloaded.',uz:'Yuk tushirilgan holda yetkazish.',zh:'卸货地交货。'},
+ DDP:{ru:'Поставка с оплатой пошлин — «под ключ» до двери.',en:'Delivered Duty Paid — door-to-door, duties paid.',uz:'Bojlar to‘langan holda eshikkacha.',zh:'完税后交货——门到门。'}
+};
+
+/* ---------- helpers ---------- */
+function applyLang(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll('[data-i]').forEach(el=>{ const v=t(el.getAttribute('data-i')); if(v!==undefined){ if(/<br>|<b>|<a /.test(v))el.innerHTML=v; else el.textContent=v; } });
+  document.querySelectorAll('[data-i-ph]').forEach(el=>el.setAttribute('placeholder',t(el.getAttribute('data-i-ph').trim())));
+  document.querySelectorAll('#langs button').forEach(b=>b.classList.toggle('on',b.getAttribute('data-l')===LANG));
+  renderRoutes(); renderManagers(); renderExtras(); renderInco(); fillCitySelects();
+}
+document.getElementById('langs').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;LANG=b.getAttribute('data-l');haptic('sel');applyLang();});
+
+function go(v){
+  haptic('light');
+  document.querySelectorAll('.view').forEach(s=>s.classList.remove('on'));
+  document.getElementById('view-'+v).classList.add('on');
+  document.querySelectorAll('.tab').forEach(tb=>tb.classList.toggle('on',tb.getAttribute('data-v')===v));
+  document.getElementById('views').scrollTop=0;
+  if(v==='chat'){ if(!chatStarted)startChat(); setTimeout(()=>{try{document.getElementById('chatInput').focus();}catch(e){}},200); }
+}
+
+/* ---------- city options from tariff base ---------- */
+function lanesCities(){ const set=new Set(); TARIFFS.forEach(r=>{set.add(r.fc+' · '+r.fct);set.add(r.tc+' · '+r.tct);}); return Array.from(set).sort(); }
+function fillCitySelects(){
+  const opts=lanesCities().map(c=>'<option value="'+c+'">'+c+'</option>').join('');
+  const f=document.getElementById('cFrom'),tt=document.getElementById('cTo');
+  const pf=f.value,pt=tt.value;
+  f.innerHTML=opts; tt.innerHTML=opts;
+  f.value=pf||'Китай · Гуанчжоу'; tt.value=pt||'Узбекистан · Ташкент';
+}
+const MODE_META={air:{i:'✈️',n:{ru:'Авиа',en:'Air',uz:'Avia',zh:'空运'}},rail:{i:'🚆',n:{ru:'Ж/Д',en:'Rail',uz:'Temir yo\'l',zh:'铁路'}},road:{i:'🚛',n:{ru:'Авто',en:'Road',uz:'Avto',zh:'公路'}},sea:{i:'🚢',n:{ru:'Море',en:'Sea',uz:'Dengiz',zh:'海运'}},multi:{i:'🔄',n:{ru:'Мультимодаль',en:'Multimodal',uz:'Multimodal',zh:'多式联运'}}};
+
+function findTariffs(fromV,toV,mode){
+  const [fc,fct]=fromV.split(' · '), [tc,tct]=toV.split(' · ');
+  return TARIFFS.filter(r=>{
+    const okFrom = (r.fct===fct)|| (r.fc===fc && !TARIFFS.some(x=>x.fct===fct));
+    const okTo = (r.tct===tct)|| (r.tc===tc && !TARIFFS.some(x=>x.tct===tct));
+    const okMode = (mode==='any'||r.mode===mode);
+    return r.fct===fct && r.tct===tct && okMode;
   });
 }
- 
-function safeParseJson(text) {
-  try { return JSON.parse(text); } catch (e) { return text.slice(0, 300); }
+
+/* ---------- extras & inco render ---------- */
+function renderExtras(){
+  const box=document.getElementById('extraChecks'); const list=t('extras_list');
+  box.innerHTML=list.map(([id,label])=>'<label class="chk" data-id="'+id+'"><input type="checkbox" value="'+id+'">'+label+'</label>').join('');
+  box.querySelectorAll('.chk').forEach(c=>c.addEventListener('click',function(e){ if(e.target.tagName!=='INPUT'){const i=this.querySelector('input');i.checked=!i.checked;} this.classList.toggle('on',this.querySelector('input').checked); haptic('sel');}));
 }
- 
-/* ================= /lead : validatsiya + yetkazish ================= */
- 
-function escapeHtml(s) {
-  return String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+function getExtras(){ return Array.from(document.querySelectorAll('#extraChecks input:checked')).map(i=>{const lab=I[LANG].extras_list.find(x=>x[0]===i.value);return lab?lab[1]:i.value;}); }
+function renderInco(){ document.getElementById('incoList').innerHTML=Object.keys(INCO).map(k=>'<p style="margin:0 0 7px"><b>'+k+'</b> — '+(INCO[k][LANG]||INCO[k].ru)+'</p>').join(''); }
+
+/* ---------- calculator ---------- */
+let lastQuote=null;
+function calcRun(){
+  haptic('medium'); bumpStat('calc');
+  const fromV=document.getElementById('cFrom').value, toV=document.getElementById('cTo').value;
+  const mode=document.getElementById('cMode').value;
+  const kg=parseFloat(document.getElementById('cWeight').value)||0;
+  const vol=parseFloat(document.getElementById('cVolume').value)||0;
+  const inco=document.getElementById('cInco').value;
+  const cargoName=document.getElementById('cCargoName').value.trim();
+  const extras=getExtras();
+  const box=document.getElementById('calcResults');
+  if(fromV===toV){ box.innerHTML='<div class="empty-hint"><div class="big">🗺️</div>'+(LANG==='ru'?'Выберите разные пункты.':LANG==='en'?'Choose different points.':LANG==='uz'?'Turli punktlarni tanlang.':'请选择不同的地点。')+'</div>'; return; }
+  const rows=findTariffs(fromV,toV,mode);
+  if(!rows.length){
+    // §18: no invented rates -> escalate
+    box.innerHTML='<div class="escalate-box"><div class="big">📨</div><p><b>'+t('na_route')+'.</b><br>'+t('na_route_p')+'</p><button class="btn-primary btn-blue" style="margin:0" onclick="openOrder(\'spec\')">'+t('send_spec')+'</button></div>';
+    lastQuote={fromV,toV,mode,kg,vol,inco,cargoName,extras,matched:false};
+    return;
+  }
+  // recommendations
+  let cheapest=rows[0],fastest=rows[0];
+  rows.forEach(r=>{ if(r.min<cheapest.min)cheapest=r; if(r.tmin<fastest.tmin)fastest=r; });
+  let html='';
+  rows.forEach(r=>{
+    const m=MODE_META[r.mode]; const nm=m?m.n[LANG]:r.mode; const icon=m?m.i:'📦';
+    const badge=(r===cheapest)?'<span class="res-badge bdg-best">'+t('best')+'</span>':(r===fastest?'<span class="res-badge bdg-fast">'+t('fast')+'</span>':'');
+    const unit=r.unit.replace('USD/кг',LANG==='ru'?'USD/кг':LANG==='zh'?'USD/公斤':'USD/kg').replace('USD/фура',LANG==='ru'?'USD/фура':LANG==='zh'?'USD/卡车':'USD/truck');
+    html+='<div class="res-card'+(r===cheapest?' best':'')+'"><div class="res-head"><div class="res-mode"><span class="mi">'+icon+'</span><div><div class="mn">'+nm+'</div><div class="md">'+t('transit')+': '+r.tmin+'–'+r.tmax+' '+t('days')+'</div></div></div>'+badge+'</div>'+
+      '<div class="res-price">$'+r.min+'–'+r.max+' <small>'+unit+'</small></div></div>';
+  });
+  // pick recommended row for the offer = cheapest
+  const chosen=cheapest;
+  html+='<div class="summary"><h4>📋 '+(LANG==='ru'?'Итог расчёта':LANG==='en'?'Quote summary':LANG==='uz'?'Hisob natijasi':'报价摘要')+'</h4>'+
+    srow('sum_route',fromV+' → '+toV)+
+    srow('sum_transport',(MODE_META[chosen.mode]?MODE_META[chosen.mode].n[LANG]:chosen.mode))+
+    srow('sum_transit',chosen.tmin+'–'+chosen.tmax+' '+t('days'))+
+    srow('sum_cost','$'+chosen.min+'–'+chosen.max+' '+chosen.unit)+
+    (inco?srow('sum_inco',inco):'')+
+    (cargoName?srow('sum_cargo',cargoName+(kg?(' · '+kg+' кг'):'')):'')+
+    (extras.length?srow('sum_extra',extras.join(', ')):'')+'</div>';
+  html+='<div class="disclaimer"><svg viewBox="0 0 24 24" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg><span>'+t('disc')+'</span></div>';
+  html+='<button class="btn-primary" style="margin-bottom:10px" onclick="openOrder(\'order\')"><svg viewBox=\'0 0 24 24\' stroke-width=\'1.9\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z\'/><polyline points=\'14 2 14 8 20 8\'/></svg>'+t('create_order')+'</button>';
+  html+='<button class="btn-primary btn-outline" onclick="downloadPDF()"><svg viewBox=\'0 0 24 24\' stroke-width=\'1.9\' stroke-linecap=\'round\' stroke-linejoin=\'round\'><path d=\'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\'/><polyline points=\'7 10 12 15 17 10\'/><line x1=\'12\' y1=\'15\' x2=\'12\' y2=\'3\'/></svg>'+t('get_pdf')+'</button>';
+  box.innerHTML=html;
+  lastQuote={fromV,toV,mode:chosen.mode,modeName:(MODE_META[chosen.mode]?MODE_META[chosen.mode].n.ru:chosen.mode),kg,vol,inco,cargoName,extras,rate:'$'+chosen.min+'–'+chosen.max+' '+chosen.unit,transit:chosen.tmin+'–'+chosen.tmax+' дн.',matched:true};
 }
- 
-function validateLead(lead) {
-  const errors = [];
-  if (!lead.name || typeof lead.name !== "string" || lead.name.length > 80) {
-    errors.push("name");
-  }
-  if (!lead.phone || typeof lead.phone !== "string" || !/^[0-9+()\s-]{5,25}$/.test(lead.phone)) {
-    errors.push("phone");
-  }
-  if (lead.note && (typeof lead.note !== "string" || lead.note.length > 800)) {
-    errors.push("note");
-  }
-  if (lead.order && (typeof lead.order !== "string" || lead.order.length > 60)) {
-    errors.push("order");
-  }
-  return errors;
-}
- 
-async function isDuplicate(env, orderId) {
-  if (!env.LEADS_KV || !orderId) return false;
-  try {
-    const existing = await env.LEADS_KV.get("lead:" + orderId);
-    if (existing) return true;
-    await env.LEADS_KV.put("lead:" + orderId, "1", { expirationTtl: 600 }); // 10 daqiqa
-    return false;
-  } catch (e) {
-    console.error("KV_ERROR", e.message);
-    return false; // KV ishlamasa, dedup shart emas — arizani rad etmaymiz
-  }
-}
- 
-async function handleLead(request, env) {
-  if (request.method !== "POST") {
-    return jsonResponse({ ok: false, error: "method_not_allowed" }, 405, env);
-  }
-  if (!checkAuth(request, env)) {
-    console.warn("LEAD_AUTH_REJECTED", clientIp(request));
-    return jsonResponse({ ok: false, error: "unauthorized" }, 401, env);
-  }
-  if (isRateLimited("lead:" + clientIp(request), RATE_LIMIT_MAX_LEAD)) {
-    console.warn("LEAD_RATE_LIMITED", clientIp(request));
-    return jsonResponse({ ok: false, error: "rate_limited" }, 429, env);
-  }
- 
-  let lead;
-  try {
-    lead = await readJsonWithLimit(request, MAX_LEAD_BODY_BYTES);
-  } catch (e) {
-    const status = e.message === "PAYLOAD_TOO_LARGE" ? 413 : 400;
-    return jsonResponse({ ok: false, error: e.message.toLowerCase() }, status, env);
-  }
- 
-  const errors = validateLead(lead);
-  if (errors.length) {
-    console.warn("LEAD_VALIDATION_FAILED", errors.join(","));
-    return jsonResponse({ ok: false, error: "validation_failed", fields: errors }, 400, env);
-  }
- 
-  if (await isDuplicate(env, lead.order)) {
-    console.log("LEAD_DUPLICATE", lead.order);
-    return jsonResponse({ ok: true, duplicate: true }, 200, env);
-  }
- 
-  // Xavfsiz (HTML-escape qilingan) va o'qishga qulay formatlangan xabar.
-  // parse_mode ataylab ISHLATILMAYDI — foydalanuvchi kiritgan matndagi
-  // *, _, [, ] kabi belgilar Telegram Markdown parserini buzib,
-  // "can't parse entities" xatosiga olib kelishi mumkin edi.
-  const q = lead.quote || {};
-  const lines = [
-    "🚚 EVOLUTION LOGISTICS",
-    "",
-    `🆔 Ariza: ${escapeHtml(lead.order || "-")}`,
-    `👤 Mijoz: ${escapeHtml(lead.name || "-")}`,
-    `☎️ Telefon: ${escapeHtml(lead.phone || "-")}`,
-    q.fromV || q.toV ? `🌍 Yo'nalish: ${escapeHtml(q.fromV || "-")} → ${escapeHtml(q.toV || "-")}` : null,
-    q.rate ? `💰 Narx: ${escapeHtml(q.rate)}` : null,
-    `🚛 Bo'lim: ${escapeHtml(lead.department || "-")}`,
-    lead.note ? `💬 Izoh: ${escapeHtml(lead.note)}` : null,
-    `🌐 Til: ${escapeHtml(lead.lang || "-")}`,
-    `📱 Telegram: ${lead.tgUser ? "@" + escapeHtml(lead.tgUser) : escapeHtml(lead.tgId || "-")}`,
-    `🕒 Vaqt: ${escapeHtml(lead.ts || new Date().toISOString())}`,
-  ].filter(Boolean);
-  const text = lines.join("\n");
- 
-  const deliveries = {};
- 
-  if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_GROUP_ID) {
-    deliveries.group = await sendTelegramMessage(env.TELEGRAM_BOT_TOKEN, env.TELEGRAM_GROUP_ID, text);
-  }
-  if (env.TELEGRAM_BOT_TOKEN && env.TELEGRAM_CHANNEL_ID) {
-    deliveries.channel = await sendTelegramMessage(env.TELEGRAM_BOT_TOKEN, env.TELEGRAM_CHANNEL_ID, text);
-  }
-  if (env.CRM_WEBHOOK_URL) {
-    deliveries.crm = await sendToCrm(env.CRM_WEBHOOK_URL, lead);
-  }
- 
-  for (const [k, v] of Object.entries(deliveries)) {
-    if (!v.ok) console.error("LEAD_DELIVERY_FAILED", k, v.error);
-    else console.log("LEAD_DELIVERY_OK", k);
-  }
- 
-  const anySucceeded = Object.values(deliveries).some((d) => d.ok) || Object.keys(deliveries).length === 0;
- 
-  return jsonResponse(
-    { ok: anySucceeded, delivered: Object.fromEntries(Object.entries(deliveries).map(([k, v]) => [k, v.ok])) },
-    anySucceeded ? 200 : 502,
-    env
-  );
-}
- 
-async function sendTelegramMessage(token, chatId, text) {
-  try {
-    const r = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text }),
+function srow(k,v){ return '<div class="srow"><span class="k">'+t(k)+'</span><span class="v">'+v+'</span></div>'; }
+
+/* ---------- PDF commercial offer ---------- */
+function downloadPDF(){
+  haptic('medium');
+  if(!lastQuote||!lastQuote.matched){ showToast('—'); return; }
+  try{
+    const { jsPDF } = window.jspdf; const doc=new jsPDF({unit:'mm',format:'a4'});
+    const W=210; let y=0;
+    // header band
+    doc.setFillColor(11,25,41); doc.rect(0,0,W,34,'F');
+    doc.setFillColor(30,123,232); doc.roundedRect(14,9,16,16,3,3,'F');
+    doc.setDrawColor(255,255,255); doc.setLineWidth(0.8);
+    doc.lines([[4,-8],[4,8]],19,21); // little triangle-ish arrow
+    doc.setTextColor(255,255,255); doc.setFont('helvetica','bold'); doc.setFontSize(17);
+    doc.text('EVOLUTION LOGISTICS',36,17);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(170,200,235);
+    doc.text('International freight forwarding · since 2006',36,23);
+    // title
+    y=46; doc.setTextColor(11,25,41); doc.setFont('helvetica','bold'); doc.setFontSize(15);
+    doc.text('Commercial Offer / Коммерческое предложение',14,y);
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(120,140,165);
+    const num='EVL-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.floor(1000+Math.random()*9000);
+    doc.text('No. '+num+'    Date: '+new Date().toLocaleDateString('ru-RU'),14,y+6);
+    // table
+    y+=16; const rows=[
+      ['Route / Маршрут', lastQuote.fromV+'  ->  '+lastQuote.toV],
+      ['Transport / Транспорт', lastQuote.modeName],
+      ['Transit / Срок', lastQuote.transit],
+      ['Rate / Ставка', lastQuote.rate],
+      ['Incoterms', lastQuote.inco||'—'],
+      ['Cargo / Груз', (lastQuote.cargoName||'—')+(lastQuote.kg?(' · '+lastQuote.kg+' kg'):'')+(lastQuote.vol?(' · '+lastQuote.vol+' m3'):'')],
+      ['Extra / Доп. услуги', (lastQuote.extras&&lastQuote.extras.length)?lastQuote.extras.join(', '):'—']
+    ];
+    doc.setFontSize(10);
+    rows.forEach(([k,v])=>{
+      doc.setDrawColor(230,236,244); doc.line(14,y+2,W-14,y+2);
+      doc.setTextColor(120,140,165); doc.setFont('helvetica','bold'); doc.text(k,14,y);
+      doc.setTextColor(11,25,41); doc.setFont('helvetica','normal');
+      doc.text(String(v),80,y,{maxWidth:W-94}); y+=11;
     });
-    const data = await r.json().catch(() => ({}));
-    if (!r.ok || data.ok === false) {
-      return { ok: false, error: data.description || `HTTP ${r.status}` };
-    }
-    return { ok: true };
-  } catch (e) {
-    return { ok: false, error: e.message };
-  }
+    // disclaimer
+    y+=4; doc.setFontSize(8); doc.setTextColor(150,110,40);
+    doc.text(doc.splitTextToSize('Rates are indicative, from the Evolution Logistics tariff base. Final price is confirmed by a manager. / Ставки ориентировочные, из тарифной базы. Точную цену подтверждает менеджер.',W-28),14,y); y+=14;
+    // footer
+    doc.setDrawColor(11,25,41); doc.setFillColor(244,247,251); doc.roundedRect(14,y,W-28,26,3,3,'F');
+    doc.setTextColor(11,25,41); doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.text('Evolution Logistics MChJ',20,y+8);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(60,85,115);
+    doc.text('Tashkent, 59A Mustaqillik St.   ·   +998 90 817 76 27   ·   '+CONFIG.email,20,y+14);
+    doc.text('License MoT RUz AT No.2122006   ·   TIN 300003937',20,y+19.5);
+    doc.save(num+'.pdf');
+    showToast(LANG==='ru'?'КП сохранено 📄':LANG==='en'?'Offer saved 📄':LANG==='uz'?'KP saqlandi 📄':'报价单已保存 📄');
+  }catch(e){ showToast('PDF: '+e.message); }
 }
- 
-async function sendToCrm(webhookUrl, lead) {
-  try {
-    const r = await fetch(webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(lead),
-    });
-    if (!r.ok) return { ok: false, error: `HTTP ${r.status}` };
-    return { ok: true };
-  } catch (e) {
-    return { ok: false, error: e.message };
+
+/* ---------- tracking ---------- */
+function trackRun(){
+  haptic('medium');
+  const no=document.getElementById('trackNo').value.trim().toUpperCase();
+  const box=document.getElementById('trackResult');
+  const rec=TRACKING[no];
+  if(!rec){
+    box.innerHTML='<div class="escalate-box" style="margin-top:14px"><div class="big">🔎</div><p>'+(LANG==='ru'?'Груз с таким номером не найден в системе. Уточните номер или запросите статус у менеджера.':LANG==='en'?'No shipment found with this number. Check the number or ask a manager.':LANG==='uz'?'Bunday raqamli yuk topilmadi. Raqamni tekshiring yoki menejerdan so\'rang.':'未找到该编号的货物。请核对编号或咨询经理。')+'</p><button class="btn-primary btn-blue" style="margin:0" onclick="openOrder(\'track\')">'+t('write')+' '+(LANG==='ru'?'менеджеру':LANG==='en'?'a manager':LANG==='uz'?'menejerga':'经理')+'</button></div>';
+    return;
   }
+  const histHtml=rec.hist.map(h=>'<div class="tl-item '+(h[2]?'done':'')+'"><div class="tt">'+h[0]+'</div><div class="ts">'+h[1]+'</div></div>').join('');
+  box.innerHTML='<div class="track-card"><div class="track-status"><span class="d"></span>'+(rec.status[LANG]||rec.status.ru)+'</div>'+
+    '<div style="font-size:12px;color:var(--text3);margin-bottom:4px">'+no+'</div>'+
+    '<div style="font-size:13px;color:var(--text2);margin-bottom:14px">📍 '+(rec.loc[LANG]||rec.loc.ru)+' · '+rec.date+'</div>'+
+    '<div class="tl">'+histHtml+'</div></div>';
 }
- 
+
+/* ---------- managers ---------- */
+const DEPTS=[
+ {id:'air',icon:'✈️',name:{ru:'Авиаперевозки',en:'Air freight',uz:'Aviayuk tashish',zh:'航空货运'},desc:{ru:'Срочные грузы, Uzbekistan Airways Cargo, Turkish Cargo',en:'Urgent cargo, Uzbekistan Airways Cargo, Turkish Cargo',uz:'Shoshilinch yuklar',zh:'紧急货物'}},
+ {id:'rail',icon:'🚆',name:{ru:'Ж/Д перевозки',en:'Rail freight',uz:'Temir yo\'l tashuvlari',zh:'铁路货运'},desc:{ru:'ТМТМ, ТРАСЕКА, FCL/LCL, вагоны',en:'TITR & TRACECA, FCL/LCL, wagons',uz:'TMTM, TRACECA, FCL/LCL',zh:'TITR、TRACECA，FCL/LCL'}},
+ {id:'road',icon:'🚛',name:{ru:'Автоперевозки',en:'Road freight',uz:'Avtotashuvlar',zh:'公路货运'},desc:{ru:'FTL/LTL: Россия, Турция, Европа, Иран, Китай',en:'FTL/LTL: Russia, Turkey, Europe, Iran, China',uz:'FTL/LTL',zh:'FTL/LTL'}},
+ {id:'customs',icon:'📋',name:{ru:'Таможенное оформление',en:'Customs clearance',uz:'Bojxona rasmiylashtiruvi',zh:'报关'},desc:{ru:'Декларирование, сертификация, все ТН ВЭД',en:'Declaration, certification, all HS codes',uz:'Deklaratsiya, barcha TIF TN',zh:'报关、认证、所有 HS 编码'}},
+ {id:'project',icon:'⚙️',name:{ru:'Проектные и спецгрузы',en:'Project & special cargo',uz:'Loyiha va maxsus yuklar',zh:'项目与特种货物'},desc:{ru:'Негабарит, тяжеловесы, ADR',en:'Oversized, heavy, ADR',uz:'Negabarit, og\'ir, ADR',zh:'超限、重货、ADR'}}
+];
+function renderManagers(){
+  const box=document.getElementById('mgrList'); let html='';
+  DEPTS.forEach(d=>{
+    const txt=encodeURIComponent((LANG==='ru'?'Здравствуйте! Интересует ':'Hello! I am interested in ')+(d.name[LANG]||d.name.ru)+'.');
+    html+='<div class="mgr-card"><div class="mgr-top"><div class="mgr-ico">'+d.icon+'</div><div><div class="mgr-name">'+(d.name[LANG]||d.name.ru)+'</div><div class="mgr-desc">'+(d.desc[LANG]||d.desc.ru)+'</div></div></div><div class="mgr-actions">'+
+      '<a class="mgr-act" href="tel:+'+CONFIG.phone+'"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13 1 .37 1.96.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.33 1.81.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>'+t('call')+'</a>'+
+      '<a class="mgr-act" href="https://wa.me/'+CONFIG.whatsapp+'?text='+txt+'" target="_blank"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>WhatsApp</a>'+
+      '<a class="mgr-act" href="mailto:'+CONFIG.email+'?subject='+encodeURIComponent(d.name[LANG]||d.name.ru)+'"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>Email</a>'+
+      '<button class="mgr-act mgr-primary" onclick="openOrder(\''+d.id+'\')"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>'+t('write')+' Telegram</button>'+
+      '</div></div>';
+  });
+  box.innerHTML=html;
+}
+
+/* ---------- routes strip ---------- */
+function renderRoutes(){
+  const box=document.getElementById('routesStrip'); let html='';
+  const seen={};
+  TARIFFS.forEach(r=>{ const key=r.fct+'>'+r.tct; if(seen[key])return; seen[key]=1;
+    const m=MODE_META[r.mode];
+    html+='<button class="rchip" onclick="prefillCalc(\''+r.fc+' · '+r.fct+'\',\''+r.tc+' · '+r.tct+'\')"><div class="r">'+r.fct+' → '+r.tct+'</div><div class="m">'+(m?m.i:'')+' $'+r.min+'–'+r.max+' '+r.unit.replace('USD/','')+'</div></button>';
+  });
+  box.innerHTML=html;
+}
+function prefillCalc(f,to){ haptic('light'); go('calc'); setTimeout(()=>{document.getElementById('cFrom').value=f;document.getElementById('cTo').value=to;document.getElementById('cMode').value='any';},60); }
+
+/* ---------- info ---------- */
+function openInfo(sec){ go('info'); renderInfo(sec); }
+function renderInfo(sec){
+  const L=LANG; let h='';
+  const about={ru:'Evolution Logistics — логистический оператор в сфере мировых грузоперевозок, работает с 2006 года. Авиа, авто, ж/д, морские и мультимодальные перевозки, таможенное оформление, проектные и негабаритные грузы. Лицензия МТ РУз АТ №2122006 (бессрочная).',en:'Evolution Logistics is a global freight-forwarding operator since 2006. Air, road, rail, sea and multimodal transport, customs clearance, project and oversized cargo. MoT RUz License AT №2122006 (unlimited).',uz:'Evolution Logistics — 2006 yildan beri jahon yuk tashish operatori. Avia, avto, temir yo\'l, dengiz va multimodal tashuvlar, bojxona, loyiha va negabarit yuklar. MT RUz litsenziyasi AT №2122006.',zh:'Evolution Logistics 是自 2006 年以来的全球货运代理运营商。空运、公路、铁路、海运及多式联运、报关、项目及超限货物。交通部许可证 AT №2122006（无限期）。'};
+  const services=[['✈️',{ru:'Авиаперевозки',en:'Air freight',uz:'Aviayuk',zh:'航空货运'},{ru:'Срочно из Ташкента в любую точку мира',en:'Urgent from Tashkent worldwide',uz:'Toshkentdan tez',zh:'从塔什干快速发往全球'}],['🚛',{ru:'Автоперевозки',en:'Road',uz:'Avto',zh:'公路货运'},{ru:'FTL/LTL, лицензия МТ',en:'FTL/LTL, MoT license',uz:'FTL/LTL',zh:'FTL/LTL'}],['🚆',{ru:'Ж/Д перевозки',en:'Rail',uz:'Temir yo\'l',zh:'铁路货运'},{ru:'FCL/LCL, ТМТМ, ТРАСЕКА',en:'FCL/LCL, TITR, TRACECA',uz:'FCL/LCL',zh:'FCL/LCL'}],['📋',{ru:'Таможенное оформление',en:'Customs',uz:'Bojxona',zh:'报关'},{ru:'Все коды ТН ВЭД',en:'All HS codes',uz:'Barcha TIF TN',zh:'所有 HS 编码'}],['🔄',{ru:'Мультимодаль',en:'Multimodal',uz:'Multimodal',zh:'多式联运'},{ru:'Авиа+авто, ж/д+авто, море+авто',en:'Air+road, rail+road, sea+road',uz:'Aralash',zh:'组合运输'}],['⚙️',{ru:'Проектные и спецгрузы',en:'Project & special',uz:'Loyiha',zh:'项目货物'},{ru:'Негабарит, ADR',en:'Oversized, ADR',uz:'Negabarit, ADR',zh:'超限、ADR'}]];
+  if(sec==='about'){ h='<div class="info-block"><h3>🏢 '+t('h_about')+'</h3><p>'+about[L]+'</p></div>'; }
+  else if(sec==='services'){ h='<div class="info-block"><h3>🚚 '+t('h_serv')+'</h3><div class="svc-list">'+services.map(s=>'<div class="svc-item"><div class="si">'+s[0]+'</div><div><div class="st">'+s[1][L]+'</div><div class="sd">'+s[2][L]+'</div></div></div>').join('')+'</div></div>'; }
+  else { h='<div class="info-block"><h3>📍 '+t('h_cont')+'</h3>'+
+    '<div class="contact-row"><div class="ci"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13 1 .37 1.96.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.33 1.81.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></div><div><div class="cl">'+t('call')+'</div><div class="cv">+998 90 817 76 27</div></div></div>'+
+    '<div class="contact-row"><div class="ci"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg></div><div><div class="cl">Email</div><div class="cv">'+CONFIG.email+'</div></div></div>'+
+    '<div class="contact-row"><div class="ci"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="cl">'+(L==='ru'?'Адрес':L==='en'?'Address':L==='uz'?'Manzil':'地址')+'</div><div class="cv" style="font-size:13px">'+(L==='ru'?'г. Ташкент, ул. Мустакиллик 59А':L==='zh'?'塔什干，穆斯塔基利克街 59A':'Tashkent, 59A Mustaqillik St.')+'</div></div></div>'+
+    '<div class="contact-row"><div class="ci"><svg viewBox="0 0 24 24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div><div><div class="cl">'+(L==='ru'?'Реквизиты':L==='en'?'Details':L==='uz'?'Rekvizitlar':'信息')+'</div><div class="cv" style="font-size:13px">ИНН 300003937 · НДС 310010227854</div></div></div>'+
+    '</div>'; }
+  document.getElementById('infoBody').innerHTML=h;
+}
+
+/* ---------- AI chat ---------- */
+let chatStarted=false, history=[];
+function tariffText(){ return TARIFFS.map(r=>`${r.fct}(${r.fc})->${r.tct}(${r.tc}) ${r.mode} ${r.min}-${r.max} ${r.unit} ${r.tmin}-${r.tmax}d`).join('; '); }
+function SYSTEM(){ return `You are the AI assistant of Evolution Logistics MChJ — an international freight forwarder in Tashkent, Uzbekistan, since 2006. License MoT RUz AT №2122006. Phone/WhatsApp +998 90 817 76 27, email ${CONFIG.email}. Services: air, road, rail, sea, multimodal, customs, project/oversized (ADR). Lanes: Uzbekistan ↔ China, Russia/CIS, Europe, Middle East/UAE, Turkey, worldwide, plus domestic.
+
+GREETING already shown. Be warm, professional, brief (2–6 sentences). Reply in the SAME language the user uses (Russian, English, Uzbek-Latin, Chinese).
+
+GoaL: act as a first-line virtual manager. To prepare a request, gather (without over-interrogating): origin country+city(+address), destination country+city(+address); cargo name, number of packages, weight, volume, dimensions, declared value; transport type (air/road/rail/sea/multimodal); Incoterms (EXW/FCA/FOB/CFR/CIF/CPT/CIP/DAP/DPU/DDP) — if the client doesn't know, explain in simple terms and suggest one; extra needs: dangerous goods, temperature, urgency, customs, insurance.
+
+CRITICAL RULES (ТЗ §18): You MUST NOT invent rates, transit times, routes or terms. Quote prices/transit ONLY if present in this TARIFF BASE:
+[${tariffText()}]
+If a requested lane/mode is NOT in the base, reply exactly in the user's language with the meaning: "Для получения точной ставки запрос передан специалисту Evolution Logistics" and suggest tapping "Передать специалисту" / the Managers tab. Never guess numbers.
+
+Routing: identify the department (Air/Rail/Road/Customs/Project) and offer to connect. For bookings, binding quotes, oversized/dangerous cargo, or on request — direct the client to the managers tab / escalation button. Keep currency in USD.`; }
+
+function addMsg(text,who){
+  const sc=document.getElementById('chatScroll');
+  const d=document.createElement('div'); d.className='msg '+who;
+  d.innerHTML=text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/\n/g,'<br>');
+  if(who==='bot'){ const row=document.createElement('div'); row.className='msg-row'; const av=document.createElement('div'); av.className='msg-av'; row.appendChild(av); row.appendChild(d); sc.appendChild(row); }
+  else sc.appendChild(d);
+  sc.scrollTop=sc.scrollHeight; return d;
+}
+function startChat(){ chatStarted=true; history=[]; document.getElementById('chatScroll').innerHTML=''; addMsg(t('greet'),'bot'); }
+function renderChips(){ const box=document.getElementById('chatChips'); const chips=(I[LANG]&&I[LANG].chips)?I[LANG].chips:I.ru.chips; box.innerHTML=chips.map((c,i)=>'<button class="chip" onclick="chipTap('+i+')">'+c+'</button>').join(''); }
+function chipTap(i){ const chips=(I[LANG]&&I[LANG].chips)?I[LANG].chips:I.ru.chips; const txt=chips[i]; if(/менедж|manager|menejer|经理/i.test(txt)){go('mgrs');return;} document.getElementById('chatInput').value=txt; sendChat(); }
+function autoGrow(el){ el.style.height='auto'; el.style.height=Math.min(96,el.scrollHeight)+'px'; }
+document.getElementById('chatInput').addEventListener('input',e=>autoGrow(e.target));
+document.getElementById('chatInput').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();} });
+
+async function callAI(userBlocks, displayText){
+  bumpStat('msg');
+  if(displayText!==null) addMsg(displayText,'me');
+  history.push({role:'user',content:userBlocks});
+  const sc=document.getElementById('chatScroll');
+  const tRow=document.createElement('div'); tRow.className='msg-row'; const tAv=document.createElement('div'); tAv.className='msg-av';
+  const typing=document.createElement('div'); typing.className='typing'; typing.innerHTML='<span></span><span></span><span></span>';
+  tRow.appendChild(tAv); tRow.appendChild(typing); sc.appendChild(tRow); sc.scrollTop=sc.scrollHeight;
+  document.getElementById('sendBtn').disabled=true;
+  try{
+    const res=await fetch(CONFIG.aiEndpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:CONFIG.aiModel,max_tokens:1000,system:SYSTEM(),messages:history.slice(-10)})});
+    const data=await res.json(); let reply='';
+    if(data&&data.content) reply=data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n').trim();
+    tRow.remove(); if(!reply) throw new Error('empty');
+    history.push({role:'assistant',content:reply});
+    const node=addMsg(reply,'bot');
+    if(/менедж|специалист|manager|specialist|menejer|经理|专员/i.test(reply)){ const b=document.createElement('button'); b.className='chip'; b.style.margin='2px 0 0'; b.textContent=t('send_spec'); b.onclick=()=>openOrder('chat'); node.appendChild(document.createElement('br')); node.appendChild(b); }
+  }catch(err){
+    tRow.remove(); const node=addMsg(t('err'),'bot');
+    const b=document.createElement('button'); b.className='chip'; b.style.margin='6px 0 0'; b.textContent=t('write'); b.onclick=()=>go('mgrs'); node.appendChild(document.createElement('br')); node.appendChild(b);
+  }finally{ document.getElementById('sendBtn').disabled=false; document.getElementById('chatScroll').scrollTop=document.getElementById('chatScroll').scrollHeight; }
+}
+function sendChat(){ const inp=document.getElementById('chatInput'); const text=inp.value.trim(); if(!text)return; haptic('light'); inp.value=''; autoGrow(inp); callAI([{type:'text',text:text}], text); }
+
+/* ---------- document recognition (vision) ---------- */
+document.getElementById('docFile').addEventListener('change',function(){
+  const f=this.files&&this.files[0]; if(!f)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const b64=String(reader.result).split(',')[1];
+    addMsg('📎 '+f.name,'me');
+    const prompt=(LANG==='ru'?'Это логистический документ (инвойс/упаковочный лист/AWB/CMR/контракт). Извлеки: отправитель/получатель, маршрут (страна+город), наименование груза, кол-во мест, вес, объём, габариты, стоимость. Верни кратко по пунктам и предложи сформировать заявку.':'This is a logistics document. Extract sender/consignee, route (country+city), cargo name, packages, weight, volume, dimensions, value. Return concise bullet points and offer to create a request.');
+    let block;
+    if(f.type==='application/pdf') block={type:'document',source:{type:'base64',media_type:'application/pdf',data:b64}};
+    else block={type:'image',source:{type:'base64',media_type:f.type||'image/jpeg',data:b64}};
+    if(!chatStarted){ go('chat'); startChat(); }
+    showToast(t('doc_sent'));
+    callAI([block,{type:'text',text:prompt}], null);
+  };
+  reader.readAsDataURL(f); this.value='';
+});
+
+/* ---------- voice input (Web Speech API) ---------- */
+let recog=null,recing=false;
+function toggleVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){ alert(t('voice_na')); return; }
+  if(recing){ try{recog.stop();}catch(e){} return; }
+  recog=new SR(); recog.lang={ru:'ru-RU',en:'en-US',uz:'uz-UZ',zh:'zh-CN'}[LANG]||'ru-RU'; recog.interimResults=false; recog.maxAlternatives=1;
+  recog.onstart=()=>{recing=true;document.getElementById('micBtn').classList.add('rec');haptic('light');};
+  recog.onend=()=>{recing=false;document.getElementById('micBtn').classList.remove('rec');};
+  recog.onerror=()=>{recing=false;document.getElementById('micBtn').classList.remove('rec');};
+  recog.onresult=e=>{ const txt=e.results[0][0].transcript; const inp=document.getElementById('chatInput'); inp.value=(inp.value?inp.value+' ':'')+txt; autoGrow(inp); };
+  try{recog.start();}catch(e){}
+}
+
+/* ---------- order / escalation ---------- */
+let orderCtx='order';
+function openOrder(ctx){
+  orderCtx=ctx||'order'; haptic('medium');
+  try{ const u=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user; if(u){ const n=[u.first_name,u.last_name].filter(Boolean).join(' '); if(n&&!document.getElementById('escName').value)document.getElementById('escName').value=n; } }catch(e){}
+  let note='';
+  if(lastQuote){ note=(LANG==='ru'?'Маршрут: ':'Route: ')+lastQuote.fromV+' → '+lastQuote.toV; if(lastQuote.kg)note+=', '+lastQuote.kg+' кг'; if(lastQuote.matched&&lastQuote.rate)note+=' · '+lastQuote.rate; }
+  if(note&&!document.getElementById('escNote').value) document.getElementById('escNote').value=note;
+  document.getElementById('orderH').textContent = (ctx==='order')?t('create_order'):t('esc_h');
+  openSheet('sheetOrder');
+}
+function deptForMode(m){ return ({air:'air',rail:'rail',road:'road',sea:'rail',multi:'road'})[m]||'customs'; }
+function submitOrder(){
+  haptic('medium'); bumpStat('lead');
+  const num='EVL-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.floor(1000+Math.random()*9000);
+  const u=(()=>{try{return (tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)||{};}catch(e){return {};}})();
+  const dept = (lastQuote&&lastQuote.mode)?deptForMode(lastQuote.mode):(['air','rail','road','customs','project'].includes(orderCtx)?orderCtx:'customs');
+  const lead={ type:'lead', order:num, context:orderCtx, department:dept,
+    name:document.getElementById('escName').value.trim(), phone:document.getElementById('escPhone').value.trim(), note:document.getElementById('escNote').value.trim(),
+    tgId:u.id||null, tgUser:u.username||null, lang:LANG, quote:lastQuote||null, ts:new Date().toISOString() };
+  /* дубль каждой заявки на почту компании */
+  try{ fetch('https://formsubmit.co/ajax/'+CONFIG.email,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'🚚 Заявка из Mini App '+num,_template:'table',_captcha:'false','Номер':num,'Отдел':dept,'Имя':lead.name||'—','Контакт':lead.phone||'—','Детали':lead.note||'—','Telegram':lead.tgUser?('@'+lead.tgUser):(lead.tgId||'—'),'Язык':LANG,'Время':lead.ts})}).catch(function(){}); }catch(e){}
+  if(inTG){ try{ tg.sendData(JSON.stringify(lead)); return; }catch(e){} }
+  const txt=encodeURIComponent('Evolution Logistics — заявка '+num+'\nОтдел: '+dept+'\nИмя: '+lead.name+'\nКонтакт: '+lead.phone+'\nДетали: '+lead.note);
+  window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+txt,'_blank');
+  closeSheets(); showToast(t('order_created')+': '+num);
+}
+
+/* ---------- sheets ---------- */
+function openSheet(id){ haptic('light'); document.getElementById(id).classList.add('on'); if(id==='sheetContact')setupQuick(); }
+function closeSheets(){ document.querySelectorAll('.sheet-bg').forEach(s=>s.classList.remove('on')); }
+function setupQuick(){
+  document.getElementById('qcTg').href = inTG?'#':'https://t.me/'+CONFIG.tgFallback;
+  document.getElementById('qcTg').onclick=(e)=>{ if(inTG){e.preventDefault(); try{tg.openTelegramLink('https://t.me/'+CONFIG.tgFallback);}catch(err){} } };
+  document.getElementById('qcWa').href='https://wa.me/'+CONFIG.whatsapp;
+  document.getElementById('qcTel').href='tel:+'+CONFIG.phone;
+  document.getElementById('qcMail').href='mailto:'+CONFIG.email;
+}
+
+/* ---------- toast ---------- */
+function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('on'); setTimeout(()=>el.classList.remove('on'),2600); }
+
+/* ---------- admin (local demo) ---------- */
+let tapCount=0,tapTimer=null;
+document.getElementById('brandTap').addEventListener('click',()=>{ tapCount++; clearTimeout(tapTimer); tapTimer=setTimeout(()=>tapCount=0,1200); if(tapCount>=5){ tapCount=0; openAdmin(); } });
+function openAdmin(){ go('admin'); document.getElementById('adminTariffs').value=JSON.stringify(TARIFFS,null,1); renderAdminStats(); }
+function adminSave(){ try{ const v=JSON.parse(document.getElementById('adminTariffs').value); TARIFFS=v; store('evo_tariffs',JSON.stringify(v)); applyLang(); showToast('OK ✅'); }catch(e){ showToast('JSON error: '+e.message); } }
+function adminReset(){ TARIFFS=TARIFFS_SEED.slice(); store('evo_tariffs',JSON.stringify(TARIFFS)); document.getElementById('adminTariffs').value=JSON.stringify(TARIFFS,null,1); applyLang(); showToast('reset ✅'); }
+function bumpStat(k){ try{ const s=JSON.parse(load('evo_stats')||'{}'); s[k]=(s[k]||0)+1; store('evo_stats',JSON.stringify(s)); }catch(e){} }
+function renderAdminStats(){ let s={}; try{s=JSON.parse(load('evo_stats')||'{}');}catch(e){} const items=[['calc','Расчётов'],['lead','Заявок'],['msg','Сообщений AI'],['', 'Тарифов']]; document.getElementById('adminStats').innerHTML=items.map(([k,l])=>'<div class="stat-box"><div class="n">'+(k?(s[k]||0):TARIFFS.length)+'</div><div class="l">'+l+'</div></div>').join(''); }
+
+/* ---------- init ---------- */
+function init(){
+  if(tg){ try{ tg.ready(); tg.expand(); tg.setHeaderColor&&tg.setHeaderColor('#0B1929'); tg.setBackgroundColor&&tg.setBackgroundColor('#f4f7fb'); }catch(e){}
+    try{ const lc=(tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.language_code)||''; if(/^ru/.test(lc))LANG='ru'; else if(/^uz/.test(lc))LANG='uz'; else if(/^zh/.test(lc))LANG='zh'; else if(/^en/.test(lc))LANG='en'; }catch(e){} }
+  renderChips(); applyLang();
+}
+init();
+</script>
+</body>
+</html>
