@@ -827,42 +827,8 @@ function submitOrder(){
 function openSheet(id){ haptic('light'); document.getElementById(id).classList.add('on'); if(id==='sheetContact')setupQuick(); }
 function closeSheets(){ document.querySelectorAll('.sheet-bg').forEach(s=>s.classList.remove('on')); }
 function setupQuick(){
-  // 1. Tugmalarni sensor bosa olishi uchun z-index qatlamini eng tepaga ko'taramiz
-  const footerMenu = document.querySelector('.bottom-nav') || document.querySelector('footer');
-  if(footerMenu) {
-    footerMenu.style.zIndex = "9999";
-    footerMenu.style.pointerEvents = "auto";
-  }
-
-  // 2. Simvollar xatosini yo'qotish uchun matnlarni inglizcha harflarda xavfsiz yozamiz
-  const adminPhoneTxt = document.getElementById('adminPhoneTxt');
-  if(adminPhoneTxt) {
-    adminPhoneTxt.innerHTML = `
-      <div style="text-align: left; padding: 10px 0; font-family: sans-serif; font-size: 14px; line-height: 1.6; color: #1e293b;">
-        <div style="margin-bottom: 8px; font-weight: bold; color: #0284c7;"> Manager Zuxriddin: <a href="tel:+998908177627" style="color:#0284c7; text-decoration:none;">+998908177627</a></div>
-        <div style="margin-bottom: 8px; font-weight: bold; color: #0284c7;"> Manager Sobir: <a href="tel:+998936861168" style="color:#0284c7; text-decoration:none;">+998936861168</a></div>
-        <div style="font-weight: bold; color: #0284c7;"> Manager Shuxrat: <a href="tel:+998976804707" style="color:#0284c7; text-decoration:none;">+998976804707</a></div>
-      </div>
-    `;
-  }
-
-  // 3. Tugmalarni to'g'ridan-to'g'ri bot havolasiga xavfsiz yo'naltiramiz
-  const qcTg = document.getElementById('qcTg');
-  if(qcTg) {
-    qcTg.href = "#";
-    qcTg.onclick = (e) => { 
-      e.preventDefault(); }
-      if(typeof tg !== 'undefined' && tg.openTelegramLink) { 
-        tg.openTelegramLink('https://t.me'); 
-      } else { 
-        window.open('https://t.me', '_blank'); 
-      } 
-    };
-  }
-}
-
-}
-
+  document.getElementById('qcTg').href = inTG?'#':'https://t.me/'+CONFIG.tgFallback;
+  document.getElementById('qcTg').onclick=(e)=>{ if(inTG){e.preventDefault(); try{tg.openTelegramLink('https://t.me/'+CONFIG.tgFallback);}catch(err){} } };
   document.getElementById('qcWa').href='https://wa.me/'+CONFIG.whatsapp;
   document.getElementById('qcTel').href='tel:+'+CONFIG.phone;
   document.getElementById('qcMail').href='mailto:'+CONFIG.email;
