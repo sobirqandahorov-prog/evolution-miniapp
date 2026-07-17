@@ -809,19 +809,58 @@ function openOrder(ctx){
 function deptForMode(m){ return ({air:'air',rail:'rail',road:'road',sea:'rail',multi:'road'})[m]||'customs'; }
 function submitOrder(){
   haptic('medium'); bumpStat('lead');
-  const num='EVL-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.floor(1000+Math.random()*9000);
-  const u=(()=>{try{return (tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)||{};}catch(e){return {};}})();
-  const dept = (lastQuote&&lastQuote.mode)?deptForMode(lastQuote.mode):(['air','rail','road','customs','project'].includes(orderCtx)?orderCtx:'customs');
-  const lead={ type:'lead', order:num, context:orderCtx, department:dept,
-    name:document.getElementById('escName').value.trim(), phone:document.getElementById('escPhone').value.trim(), note:document.getElementById('escNote').value.trim(),
-    tgId:u.id||null, tgUser:u.username||null, lang:LANG, quote:lastQuote||null, ts:new Date().toISOString() };
-  /* дубль каждой заявки на почту компании */
-  try{ fetch('https://formsubmit.co/ajax/'+CONFIG.email,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'🚚 Заявка из Mini App '+num,_template:'table',_captcha:'false','Номер':num,'Отдел':dept,'Имя':lead.name||'—','Контакт':lead.phone||'—','Детали':lead.note||'—','Telegram':lead.tgUser?('@'+lead.tgUser):(lead.tgId||'—'),'Язык':LANG,'Время':lead.ts})}).catch(function(){}); }catch(e){}
-  if(inTG){ try{ tg.sendData(JSON.stringify(lead)); return; }catch(e){} }
-  const txt=encodeURIComponent('Evolution Logistics — заявка '+num+'\nОтдел: '+dept+'\nИмя: '+lead.name+'\nКонтакт: '+lead.phone+'\nДетали: '+lead.note);
-  window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+txt,'_blank');
-  closeSheets(); showToast(t('order_created')+': '+num);
+  
+  const num = 'EVL-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.floor(1000+Math.random()*9000);
+  const u = (()=>{try{return (tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)||{};}catch(e){return {};}})();
+  
+  // Formadagi ma'lumotlarni yig'amiz
+  const escNameEl = document.getElementById('escName');
+  const escPhoneEl = document.getElementById('escPhone');
+  const escNoteEl = document.getElementById('escNote');
+  
+  const lead = {
+    type: 'lead',
+    order: num,
+    context: orderCtx,
+    department: 'Логистика / Менеджеру',
+    name: escNameEl ? escNameEl.value.trim() : '',
+    phone: escPhoneEl ? escPhoneEl.value.trim() : '',
+    note: escNoteEl ? escNoteEl.value.trim() : '',
+    tgId: u.id || null,
+    tgUser: u.username || null,
+    lang: LANG,
+    quote: lastQuote || null,
+    ts: new Date().toISOString()
+  };
+
+  // 1. Agar Telegram ichida ochilgan bo'lsa, ma'lumotni to'g'ridan-to'g'ri botga yuboramiz
+  if(intG){
+    try {
+      tg.sendData(JSON.stringify(lead));
+      closeSheets();
+      showToast(t('order_created') + ': ' + num);
+      return;
+    } catch(e) {
+      console.error("Telegram sendData xatosi:", e);
+    }
+  }
+
+  // 2. Agar brauzerda yoki muqobil xizmatda bo'lsa, pochta va zaxira havolalar orqali yuborish
+  try {
+    fetch('https://formsubmit.co, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+      body: JSON.stringify({_subject: '🔔 Заявка из Mini App ' + num, ...lead})
+    });
+  } catch(e){}
+
+  const txt = encodeURIComponent('Evolution Logistics - заявка ' + num + '\nОтдел: ' + lead.department + '\nИмя: ' + lead.name + '\nКонтакты: ' + lead.phone + '\nДетали: ' + lead.note);
+  window.open('https://wa.me, '_blank');
+  
+  closeSheets();
+  showToast(t('order_created') + ': ' + num);
 }
+
 
 /* ---------- sheets ---------- */
 function openSheet(id){ haptic('light'); document.getElementById(id).classList.add('on'); if(id==='sheetContact')setupQuick(); }
