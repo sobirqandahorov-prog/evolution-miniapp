@@ -809,60 +809,50 @@ function openOrder(ctx){
 function deptForMode(m){ return ({air:'air',rail:'rail',road:'road',sea:'rail',multi:'road'})[m]||'customs'; }
 function submitOrder(){
   haptic('medium'); bumpStat('lead');
-  
-  const num = 'EVL-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.floor(1000+Math.random()*9000);
-  const u = (()=>{try{return (tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)||{};}catch(e){return {};}})();
-  
-  const escNameEl = document.getElementById('escName');
-  const escPhoneEl = document.getElementById('escPhone');
-  const escNoteEl = document.getElementById('escNote');
-  
-  const lead = {
-    type: 'lead',
-    order: num,
-    context: orderCtx,
-    department: 'Логистика / Менеджеру',
-    name: escNameEl && escNameEl.value.trim() !== '' ? escNameEl.value.trim() : 'Зухриддин',
-    phone: escPhoneEl && escPhoneEl.value.trim() !== '' ? escPhoneEl.value.trim() : '+998908177627',
-    note: escNoteEl && escNoteEl.value.trim() !== '' ? escNoteEl.value.trim() : 'aloqa',
-    tgId: u.id || null,
-    tgUser: u.username || null,
-    lang: LANG,
-    quote: lastQuote || null,
-    ts: new Date().toISOString()
-  };
-
-  const submitBtn = document.getElementById('submit-order-btn');
-  if(submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.innerText = "Отправка...";
-  }
-
-  if(intG){
-    try {
-      tg.sendData(JSON.stringify(lead));
-      showToast(t('order_created') + ': ' + num);
-      setTimeout(() => { if(submitBtn) { submitBtn.disabled = false; submitBtn.innerText = "Отправить менеджеру"; } }, 1000);
-      return;
-    } catch(e) {
-      console.error("Telegram sendData error:", e);
-    }
-  }
-
-  try {
-    fetch('https://formsubmit.co' + CONFIG.email, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-      body: JSON.stringify({_subject: '🔔 Заявка из Mini App ' + num, ...lead})
-    });
-  } catch(e){}
-
-  const txt = encodeURIComponent('Evolution Logistics - заявка ' + num + '\nОтдел: ' + lead.department + '\nИмя: ' + lead.name + '\nКонтакты: ' + lead.phone + '\nДетали: ' + lead.note);
-  window.open('https://wa.me' + CONFIG.whatsapp + '?text=' + txt, '_blank');
-  
-  showToast(t('order_created') + ': ' + num);
-  if(submitBtn) {
-    submitBtn.disabled = false;
-    submitBtn.innerText = "Отправить менеджеру";
-  }
+  const num='EVL-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.floor(1000+Math.random()*9000);
+  const u=(()=>{try{return (tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)||{};}catch(e){return {};}})();
+  const dept = (lastQuote&&lastQuote.mode)?deptForMode(lastQuote.mode):(['air','rail','road','customs','project'].includes(orderCtx)?orderCtx:'customs');
+  const lead={ type:'lead', order:num, context:orderCtx, department:dept,
+    name:document.getElementById('escName').value.trim(), phone:document.getElementById('escPhone').value.trim(), note:document.getElementById('escNote').value.trim(),
+    tgId:u.id||null, tgUser:u.username||null, lang:LANG, quote:lastQuote||null, ts:new Date().toISOString() };
+  /* дубль каждой заявки на почту компании */
+  try{ fetch('https://formsubmit.co/ajax/'+CONFIG.email,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'🚚 Заявка из Mini App '+num,_template:'table',_captcha:'false','Номер':num,'Отдел':dept,'Имя':lead.name||'—','Контакт':lead.phone||'—','Детали':lead.note||'—','Telegram':lead.tgUser?('@'+lead.tgUser):(lead.tgId||'—'),'Язык':LANG,'Время':lead.ts})}).catch(function(){}); }catch(e){}
+  if(inTG){ try{ tg.sendData(JSON.stringify(lead)); return; }catch(e){} }
+  const txt=encodeURIComponent('Evolution Logistics — заявка '+num+'\nОтдел: '+dept+'\nИмя: '+lead.name+'\nКонтакт: '+lead.phone+'\nДетали: '+lead.note);
+  window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+txt,'_blank');
+  closeSheets(); showToast(t('order_created')+': '+num);
 }
+
+/* ---------- sheets ---------- */
+function openSheet(id){ haptic('light'); document.getElementById(id).classList.add('on'); if(id==='sheetContact')setupQuick(); }
+function closeSheets(){ document.querySelectorAll('.sheet-bg').forEach(s=>s.classList.remove('on')); }
+function setupQuick(){
+  document.getElementById('qcTg').href = inTG?'#':'https://t.me/'+CONFIG.tgFallback;
+  document.getElementById('qcTg').onclick=(e)=>{ if(inTG){e.preventDefault(); try{tg.openTelegramLink('https://t.me/'+CONFIG.tgFallback);}catch(err){} } };
+  document.getElementById('qcWa').href='https://wa.me/'+CONFIG.whatsapp;
+  document.getElementById('qcTel').href='tel:+'+CONFIG.phone;
+  document.getElementById('qcMail').href='mailto:'+CONFIG.email;
+}
+
+/* ---------- toast ---------- */
+function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('on'); setTimeout(()=>el.classList.remove('on'),2600); }
+
+/* ---------- admin (local demo) ---------- */
+let tapCount=0,tapTimer=null;
+document.getElementById('brandTap').addEventListener('click',()=>{ tapCount++; clearTimeout(tapTimer); tapTimer=setTimeout(()=>tapCount=0,1200); if(tapCount>=5){ tapCount=0; openAdmin(); } });
+function openAdmin(){ go('admin'); document.getElementById('adminTariffs').value=JSON.stringify(TARIFFS,null,1); renderAdminStats(); }
+function adminSave(){ try{ const v=JSON.parse(document.getElementById('adminTariffs').value); TARIFFS=v; store('evo_tariffs',JSON.stringify(v)); applyLang(); showToast('OK ✅'); }catch(e){ showToast('JSON error: '+e.message); } }
+function adminReset(){ TARIFFS=TARIFFS_SEED.slice(); store('evo_tariffs',JSON.stringify(TARIFFS)); document.getElementById('adminTariffs').value=JSON.stringify(TARIFFS,null,1); applyLang(); showToast('reset ✅'); }
+function bumpStat(k){ try{ const s=JSON.parse(load('evo_stats')||'{}'); s[k]=(s[k]||0)+1; store('evo_stats',JSON.stringify(s)); }catch(e){} }
+function renderAdminStats(){ let s={}; try{s=JSON.parse(load('evo_stats')||'{}');}catch(e){} const items=[['calc','Расчётов'],['lead','Заявок'],['msg','Сообщений AI'],['', 'Тарифов']]; document.getElementById('adminStats').innerHTML=items.map(([k,l])=>'<div class="stat-box"><div class="n">'+(k?(s[k]||0):TARIFFS.length)+'</div><div class="l">'+l+'</div></div>').join(''); }
+
+/* ---------- init ---------- */
+function init(){
+  if(tg){ try{ tg.ready(); tg.expand(); tg.setHeaderColor&&tg.setHeaderColor('#0B1929'); tg.setBackgroundColor&&tg.setBackgroundColor('#f4f7fb'); }catch(e){}
+    try{ const lc=(tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.language_code)||''; if(/^ru/.test(lc))LANG='ru'; else if(/^uz/.test(lc))LANG='uz'; else if(/^zh/.test(lc))LANG='zh'; else if(/^en/.test(lc))LANG='en'; }catch(e){} }
+  renderChips(); applyLang();
+}
+init();
+</script>
+</body>
+</html>
