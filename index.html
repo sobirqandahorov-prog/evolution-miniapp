@@ -156,4 +156,18 @@
   /* ---------- admin (local demo) ---------- */
   let tapCount=0,tapTimer=null;
   document.getElementById('brandTap').addEventListener('click',()=>{ tapCount++; clearTimeout(tapTimer); tapTimer=setTimeout(()=>tapCount=0,1200); if(tapCount>=5){ tapCount=0; openAdmin(); } });
-  function openAdmin(){ go('admin'); document.getElementById('adminTariffs').value=JSON.stringify(TARIFFS,null,1); renderAdminStats(); }
+  function openAdmin(){ go('admin'); document.getElementById('adminTariffs').value=JSON.stringify(TARIFFS,null,1); renderAdminStats(); } 
+                                                  function adminSave(){ try{ const v=JSON.parse(document.getElementById('adminTariffs').value); TARIFFS=v; store('evo_tariffs',JSON.stringify(v)); applyLang(); showToast('OK ✅'); }catch(e){ showToast('JSON error: '+e.message); } }
+function adminReset(){ TARIFFS=TARIFFS_SEED.slice(); store('evo_tariffs',JSON.stringify(TARIFFS)); document.getElementById('adminTariffs').value=JSON.stringify(TARIFFS,null,1); applyLang(); showToast('reset ✅'); }
+function bumpStat(k){ try{ const s=JSON.parse(load('evo_stats')||'{}'); s[k]=(s[k]||0)+1; store('evo_stats',JSON.stringify(s)); }catch(e){} }
+function renderAdminStats(){ let s={}; try{s=JSON.parse(load('evo_stats')||'{}');}catch(e){} const items=[['calc','Расчётов'],['lead','Заявок'],['msg','Сообщений AI'],['', 'Тарифов']]; document.getElementById('adminStats').innerHTML=items.map(([k,l])=>'<div class="stat-box"><div class="n">'+(k?(s[k]||0):TARIFFS.length)+'</div><div class="l">'+l+'</div></div>').join(''); }
+/* ---------- init ---------- */
+function init(){
+  if(tg){ try{ tg.ready(); tg.expand(); tg.setHeaderColor&&tg.setHeaderColor('#0B1929'); tg.setBackgroundColor&&tg.setBackgroundColor('#f4f7fb'); }catch(e){}
+    try{ const lc=(tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.language_code)||''; if(/^ru/.test(lc))LANG='ru'; else if(/^uz/.test(lc))LANG='uz'; else if(/^zh/.test(lc))LANG='zh'; else if(/^en/.test(lc))LANG='en'; }catch(e){} }
+  renderChips(); applyLang();
+}
+init();
+</script>
+</body>
+</html>
