@@ -1,43 +1,31 @@
 const { Telegraf } = require('telegraf');
-const Anthropic = require('@anthropic-ai/sdk');
 
-// Vercel-dagi maxfiy kalitlarni o'qiymiz
 const bot = new Telegraf(process.env.BOT_TOKEN);
-const anthropic = new Anthropic({ apiKey: process.env.CLAUDE_API_KEY });
 
-// Botga /start buyrug'i berilganda salomlashish xabari va Mini App tugmasi
 bot.start((ctx) => {
-  return ctx.reply('Salom! Evolution Logistics botiga xush kelibsiz. Quyidagi tugma orqali ilovani ochishingiz mumkin:', {
+  return ctx.reply('👋 Salom! Evolution Logistics botiga xush kelibsiz.\n\n🚚 Yuk tashish tariflarini hisoblash va botdan foydalanish oson bo\'lishi uchun quyidagi tugmani bosing:', {
     reply_markup: {
       inline_keyboard: [
-                [{ text: "📦 Ilovani ochish", web_app: { url: "https://vercel.app" } }]
+        [{ text: "📦 Ilovani ochish (Mini App)", web_app: { url: "https://vercel.app" } }]
       ]
     }
   });
 });
 
-// Foydalanuvchi botga matn yozganda Claude (AI) orqali javob qaytarish logikasi
 bot.on('text', async (ctx) => {
-  const userMessage = ctx.message.text;
+  const msg = ctx.message.text.toLowerCase();
   
-  try {
-    // Claude API ga so'rov yuboramiz
-    const response = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307', // Tezkor va arzon logistika modeli
-      max_tokens: 1000,
-      system: "Sen Evolution Logistics kompaniyasining aqlli AI yordamchisisan. Foydalanuvchilarga yuk tashish, tariflar va logistika bo'yicha professional, do'stona unda aniq javob ber. Faqat o'zbek, rus va ingliz tillarida javob qaytar.",
-      messages: [{ role: 'user', content: userMessage }],
-    });
-
-    const aiReply = response.content.text;
-    await ctx.reply(aiReply);
-  } catch (error) {
-    console.error('Claude API Error:', error);
-    await ctx.reply('Kechirasiz, tizimda kichik nosozlik yuz berdi. Birozdan so\'ng qayta urinib ko\'ring.');
+  if (msg.includes('salom') || msg.includes('assalom') || msg.includes('privet')) {
+    return ctx.reply('👋 Assalomu alaykum! Evolution Logistics kompaniyasining rasmiy botiga xush kelibsiz. Sizga qanday yordam bera olaman?\n\n💡 Tariflarni koʻrish uchun pastdagi "📦 Ilovani ochish" tugmasini bosing.');
   }
+  
+  if (msg.includes('tarif') || msg.includes('narx') || msg.includes('narxi') || msg.includes('dostavka')) {
+    return ctx.reply('📊 Bizning yuk tashish tariflarimiz:\n\n🚛 Avto (12-18 kun): $4.20 - $4.80 / kg\n🚂 JD (22-28 kun): $2.80 - $3.40 / kg\n✈️ Avia (5-8 kun): $6.50 - $8.00 / kg\n\n🧮 Aniqlab hisoblash uchun pastdagi Mini App ilovamizni oching!');
+  }
+
+  return ctx.reply('📝 Sizning soʻrovingiz qabul qilindi! Logistika menejerimiz tez orada siz bilan bogʻlanadi.\n\nℹ️ Shuningdek, pastdagi tugma orqali Mini App ilovamizni ochib, tariflarni oʻzingiz ham hisoblashingiz mumkin.');
 });
 
-// Vercel Serverless Function sifatida ishlashi uchun eksport qilamiz
 module.exports = async (req, res) => {
   try {
     if (req.method === 'POST') {
