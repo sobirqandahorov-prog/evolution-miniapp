@@ -827,8 +827,33 @@ function submitOrder(){
 function openSheet(id){ haptic('light'); document.getElementById(id).classList.add('on'); if(id==='sheetContact')setupQuick(); }
 function closeSheets(){ document.querySelectorAll('.sheet-bg').forEach(s=>s.classList.remove('on')); }
 function setupQuick(){
-  document.getElementById('qcTg').href = inTG?'#':'https://t.me/'+CONFIG.tgFallback;
-  document.getElementById('qcTg').onclick=(e)=>{ if(inTG){e.preventDefault(); try{tg.openTelegramLink('https://t.me/'+CONFIG.tgFallback);}catch(err){} } };
+  // Menejerlar ma'lumotlarini ekranga chiroyli qilib chiqaramiz
+  const adminPhoneTxt = document.getElementById('adminPhoneTxt');
+  if(adminPhoneTxt) {
+    adminPhoneTxt.innerHTML = `
+      <div style="text-align: left; padding: 10px 0; font-family: sans-serif; font-size: 14px; line-height: 1.6; color: #1e293b;">
+        <div style="margin-bottom: 8px; font-weight: bold; color: #0284c7;">👨‍💼 Zuxriddin: <a href="tel:+998908177627" style="color:#0284c7; text-decoration:none;">+998 (90) 817-76-27</a></div>
+        <div style="margin-bottom: 8px; font-weight: bold; color: #0284c7;">👨‍💼 Sobir: <a href="tel:+998936861168" style="color:#0284c7; text-decoration:none;">+998 (93) 686-11-68</a></div>
+        <div style="font-weight: bold; color: #0284c7;">👨‍💼 Shuxrat: <a href="tel:+998976804707" style="color:#0284c7; text-decoration:none;">+998 (97) 680-47-07</a></div>
+      </div>
+    `;
+  }
+
+  // Tugmalarni bosganda Zuxriddinga ulanadigan qilamiz
+  const qcTg = document.getElementById('qcTg');
+  if(qcTg) {
+    qcTg.href = "#";
+    qcTg.onclick = (e) => { 
+      e.preventDefault(); 
+      if(typeof tg !== 'undefined' && tg.openTelegramLink) { 
+        tg.openTelegramLink('https://t.me'); 
+      } else { 
+        window.open('https://t.me', '_blank'); 
+      } 
+    };
+  }
+}
+
   document.getElementById('qcWa').href='https://wa.me/'+CONFIG.whatsapp;
   document.getElementById('qcTel').href='tel:+'+CONFIG.phone;
   document.getElementById('qcMail').href='mailto:'+CONFIG.email;
