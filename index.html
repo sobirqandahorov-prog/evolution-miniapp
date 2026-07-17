@@ -809,116 +809,48 @@ function openOrder(ctx){
 function deptForMode(m){ return ({air:'air',rail:'rail',road:'road',sea:'rail',multi:'road'})[m]||'customs'; }
 function submitOrder(){
   haptic('medium'); bumpStat('lead');
-  
-  const num = 'EVL-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.floor(1000+Math.random()*9000);
-  const u = (()=>{try{return (tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)||{};}catch(e){return {};}})();
-  
-  // Formadagi ma'lumotlarni yig'amiz
-  const escNameEl = document.getElementById('escName');
-  const escPhoneEl = document.getElementById('escPhone');
-  const escNoteEl = document.getElementById('escNote');
-  
-  const lead = {
-    type: 'lead',
-    order: num,
-    context: orderCtx,
-    department: 'Логистика / Менеджеру',
-    name: escNameEl ? escNameEl.value.trim() : '',
-    phone: escPhoneEl ? escPhoneEl.value.trim() : '',
-    note: escNoteEl ? escNoteEl.value.trim() : '',
-    tgId: u.id || null,
-    tgUser: u.username || null,
-    lang: LANG,
-    quote: lastQuote || null,
-    ts: new Date().toISOString()
-  };
-
-  // 1. Agar Telegram ichida ochilgan bo'lsa, ma'lumotni to'g'ridan-to'g'ri botga yuboramiz
-  if(intG){
-    try {
-      tg.sendData(JSON.stringify(lead));
-      closeSheets();
-      showToast(t('order_created') + ': ' + num);
-      return;
-    } catch(e) {
-      console.error("Telegram sendData xatosi:", e);
-    }
-  }
-
-  // 2. Agar brauzerda yoki muqobil xizmatda bo'lsa, pochta va zaxira havolalar orqali yuborish
-  try {
-    fetch('https://formsubmit.co, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
-      body: JSON.stringify({_subject: '🔔 Заявка из Mini App ' + num, ...lead})
-    });
-  } catch(e){}
-
-  const txt = encodeURIComponent('Evolution Logistics - заявка ' + num + '\nОтдел: ' + lead.department + '\nИмя: ' + lead.name + '\nКонтакты: ' + lead.phone + '\nДетали: ' + lead.note);
-  window.open('https://wa.me, '_blank');
-  
-  closeSheets();
-  showToast(t('order_created') + ': ' + num);
+  const num='EVL-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+Math.floor(1000+Math.random()*9000);
+  const u=(()=>{try{return (tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user)||{};}catch(e){return {};}})();
+  const dept = (lastQuote&&lastQuote.mode)?deptForMode(lastQuote.mode):(['air','rail','road','customs','project'].includes(orderCtx)?orderCtx:'customs');
+  const lead={ type:'lead', order:num, context:orderCtx, department:dept,
+    name:document.getElementById('escName').value.trim(), phone:document.getElementById('escPhone').value.trim(), note:document.getElementById('escNote').value.trim(),
+    tgId:u.id||null, tgUser:u.username||null, lang:LANG, quote:lastQuote||null, ts:new Date().toISOString() };
+  /* дубль каждой заявки на почту компании */
+  try{ fetch('https://formsubmit.co/ajax/'+CONFIG.email,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({_subject:'🚚 Заявка из Mini App '+num,_template:'table',_captcha:'false','Номер':num,'Отдел':dept,'Имя':lead.name||'—','Контакт':lead.phone||'—','Детали':lead.note||'—','Telegram':lead.tgUser?('@'+lead.tgUser):(lead.tgId||'—'),'Язык':LANG,'Время':lead.ts})}).catch(function(){}); }catch(e){}
+  if(inTG){ try{ tg.sendData(JSON.stringify(lead)); return; }catch(e){} }
+  const txt=encodeURIComponent('Evolution Logistics — заявка '+num+'\nОтдел: '+dept+'\nИмя: '+lead.name+'\nКонтакт: '+lead.phone+'\nДетали: '+lead.note);
+  window.open('https://wa.me/'+CONFIG.whatsapp+'?text='+txt,'_blank');
+  closeSheets(); showToast(t('order_created')+': '+num);
 }
-
 
 /* ---------- sheets ---------- */
 function openSheet(id){ haptic('light'); document.getElementById(id).classList.add('on'); if(id==='sheetContact')setupQuick(); }
 function closeSheets(){ document.querySelectorAll('.sheet-bg').forEach(s=>s.classList.remove('on')); }
 function setupQuick(){
-  // 1. Footer menyuni eng yuqori qatlamga ko'taramiz
-  const footerMenu = document.querySelector('.bottom-nav') || document.querySelector('footer') || document.getElementById('footer');
-  if(footerMenu) {
-    footerMenu.style.cssText = "z-index: 99999 !important; pointer-events: auto !important; position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; display: flex !important;";
-  }
-
-  // 2. Menejerlar ma'lumotlarini chiqaramiz
-  const adminPhoneTxt = document.getElementById('adminPhoneTxt');
-  if(adminPhoneTxt) {
-    adminPhoneTxt.innerHTML = `
-      <div style="text-align: left; padding: 10px 0; font-family: sans-serif; font-size: 14px; line-height: 1.6; color: #1e293b;">
-        <div style="margin-bottom: 8px; font-weight: bold; color: #0284c7;">Manager Zuxriddin: <a href="tel:+998908177627" style="color:#0284c7; text-decoration:none;">+998908177627</a></div>
-        <div style="margin-bottom: 8px; font-weight: bold; color: #0284c7;">Manager Sobir: <a href="tel:+998936861168" style="color:#0284c7; text-decoration:none;">+998936861168</a></div>
-        <div style="font-weight: bold; color: #0284c7;">Manager Shuxrat: <a href="tel:+998976804707" style="color:#0284c7; text-decoration:none;">+998976804707</a></div>
-      </div>
-    `;
-  }
-
-  // 3. Tugmalarni ulash
-  const qcTg = document.getElementById('qcTg');
-  if(qcTg) {
-    qcTg.href = intG ? '#' : 'https://t.me' + CONFIG.tgFallback;
-    qcTg.onclick = (e) => {
-      if(intG) {
-        e.preventDefault();
-        try { tg.openTelegramLink('https://t.me' + CONFIG.tgFallback); } catch(err) {}
-      }
-    };
-  }
-  
-  const qcWa = document.getElementById('qcWa'); if(qcWa) qcWa.href = 'https://wa.me' + CONFIG.whatsapp;
-  const qcTel = document.getElementById('qcTel'); if(qcTel) qcTel.href = 'tel:+' + CONFIG.phone;
-  const qcMail = document.getElementById('qcMail'); if(qcMail) qcMail.href = 'mailto:' + CONFIG.email;
+  document.getElementById('qcTg').href = inTG?'#':'https://t.me/'+CONFIG.tgFallback;
+  document.getElementById('qcTg').onclick=(e)=>{ if(inTG){e.preventDefault(); try{tg.openTelegramLink('https://t.me/'+CONFIG.tgFallback);}catch(err){} } };
+  document.getElementById('qcWa').href='https://wa.me/'+CONFIG.whatsapp;
+  document.getElementById('qcTel').href='tel:+'+CONFIG.phone;
+  document.getElementById('qcMail').href='mailto:'+CONFIG.email;
 }
 
-/* --------- toast --------- */
-function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('on'); setTimeout(()=>el.classList.remove('on'),3000); }
+/* ---------- toast ---------- */
+function showToast(msg){ const el=document.getElementById('toast'); el.textContent=msg; el.classList.add('on'); setTimeout(()=>el.classList.remove('on'),2600); }
 
-/* --------- admin (local demo) --------- */
+/* ---------- admin (local demo) ---------- */
 let tapCount=0,tapTimer=null;
-document.getElementById('brandTap').addEventListener('click',()=> { tapCount++; clearTimeout(tapTimer); tapTimer=setTimeout(()=>tapCount=0,2000); if(tapCount>=5){ openAdmin(); tapCount=0; } });
+document.getElementById('brandTap').addEventListener('click',()=>{ tapCount++; clearTimeout(tapTimer); tapTimer=setTimeout(()=>tapCount=0,1200); if(tapCount>=5){ tapCount=0; openAdmin(); } });
 function openAdmin(){ go('admin'); document.getElementById('adminTariffs').value=JSON.stringify(TARIFFS,null,1); renderAdminStats(); }
-function adminSave(){ try{ const v=JSON.parse(document.getElementById('adminTariffs').value); TARIFFS=v; store('evo_tariffs',JSON.stringify(TARIFFS)); go('home'); }catch(e){ alert('Xato JSON format!'); } }
-function adminReset(){ TARIFFS=TARIFFS_SEED.slice(); store('evo_tariffs',JSON.stringify(TARIFFS)); document.getElementById('adminTariffs').value=JSON.stringify(TARIFFS,null,1); renderAdminStats(); }
+function adminSave(){ try{ const v=JSON.parse(document.getElementById('adminTariffs').value); TARIFFS=v; store('evo_tariffs',JSON.stringify(v)); applyLang(); showToast('OK ✅'); }catch(e){ showToast('JSON error: '+e.message); } }
+function adminReset(){ TARIFFS=TARIFFS_SEED.slice(); store('evo_tariffs',JSON.stringify(TARIFFS)); document.getElementById('adminTariffs').value=JSON.stringify(TARIFFS,null,1); applyLang(); showToast('reset ✅'); }
 function bumpStat(k){ try{ const s=JSON.parse(load('evo_stats')||'{}'); s[k]=(s[k]||0)+1; store('evo_stats',JSON.stringify(s)); }catch(e){} }
-function renderAdminStats(){ let s={}; try{s=JSON.parse(load('evo_stats')||'{}');}catch(e){} const items=[['calc','Расчётов'],['lead','Заявок'],['track','Трекингов']]; document.getElementById('adminStatsList').innerHTML=items.map(([k,n])=>`<div class="stat-item"><span>${n}</span><strong>${s[k]||0}</strong></div>`).join(''); }
+function renderAdminStats(){ let s={}; try{s=JSON.parse(load('evo_stats')||'{}');}catch(e){} const items=[['calc','Расчётов'],['lead','Заявок'],['msg','Сообщений AI'],['', 'Тарифов']]; document.getElementById('adminStats').innerHTML=items.map(([k,l])=>'<div class="stat-box"><div class="n">'+(k?(s[k]||0):TARIFFS.length)+'</div><div class="l">'+l+'</div></div>').join(''); }
 
-/* --------- init --------- */
+/* ---------- init ---------- */
 function init(){
-  if(tg){ try{ tg.ready(); tg.expand(); tg.setHeaderColor&&tg.setHeaderColor('#0B1929'); tg.setBackgroundColor&&tg.setBackgroundColor('#f4f7fb'); }catch(e){} }
-  try{ const lc=(tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.language_code)||''; if(/^ru/.test(lc))LANG='ru'; }catch(e){}
+  if(tg){ try{ tg.ready(); tg.expand(); tg.setHeaderColor&&tg.setHeaderColor('#0B1929'); tg.setBackgroundColor&&tg.setBackgroundColor('#f4f7fb'); }catch(e){}
+    try{ const lc=(tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.language_code)||''; if(/^ru/.test(lc))LANG='ru'; else if(/^uz/.test(lc))LANG='uz'; else if(/^zh/.test(lc))LANG='zh'; else if(/^en/.test(lc))LANG='en'; }catch(e){} }
   renderChips(); applyLang();
-  setTimeout(setupQuick, 500);
 }
 init();
 </script>
